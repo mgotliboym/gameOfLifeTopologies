@@ -17,14 +17,14 @@ leftMvTorus :: ListZipTorus a -> ListZipTorus a
 leftMvTorus (ListZipTorus [] c []) = ListZipTorus [] c []
 leftMvTorus (ListZipTorus (a:as) c bs) = ListZipTorus as a (c:bs)
 leftMvTorus (ListZipTorus [] c bs) =
-  let (r:rbs) = reverse bs
-      in ListZipTorus (c:rbs) r []
+  let (r:rbs) = reverse (c:bs)
+      in ListZipTorus (rbs) r [] --rbs r [c]
 rightMvTorus :: ListZipTorus a -> ListZipTorus a
 rightMvTorus (ListZipTorus [] c []) = ListZipTorus [] c []
 rightMvTorus (ListZipTorus as c (b:bs)) = ListZipTorus (c:as) b bs
 rightMvTorus (ListZipTorus as c []) =
-  let (r:ras) = reverse as
-      in ListZipTorus [] r (ras++[c])
+  let (r:ras) = reverse (c:as)
+      in ListZipTorus [] r (ras) --[c] r ras
 
 iterateN :: Int -> (a -> a) -> a -> [a]
 iterateN n f x = take n $ tail $ iterate f x

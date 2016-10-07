@@ -52,11 +52,11 @@ getLRElemKlein lr (PlaneZipKlein zs) =
   if lr then
     case (focus zs) of
     ZpMobius _ (a:_) _ _ -> a
-    ZpMobius n [] _ _    -> lastZp $ newRow n -- trace ("row index: " ++ (show $ newIndex n)) $ newRow n -- $ trace ("row: " ++ (show $ newRow n)) $ newRow n
+    ZpMobius n [] _ _    -> lastZp $ newRow n --trace ("row index: " ++ (show $ newIndex n)) $ newRow n -- $ trace ("row: " ++ (show $ newRow n)) $ newRow n
   else
     case (focus zs) of
     ZpMobius _ _ _ (b:_) -> b
-    ZpMobius n _ _ []    -> headZp $ newRow n -- trace ("row index: " ++ (show $ newIndex n)) $ newRow n 
+    ZpMobius n _ _ []    -> headZp $ newRow n --trace ("row index: " ++ (show $ newIndex n)) $ newRow n 
   where newIndex n = (length $ left zs) + 1 + (length $ right zs) - n
         newRow n =
           if newIndex n < length (left zs) then
@@ -122,14 +122,9 @@ startBoardKlein' =
       (xs,y:ys) = splitAt 3 board
     in PlaneZipKlein $ ListZipTorus (reverse xs) y ys
 
-
-vertWallBoardKlein :: Int -> PlaneZipKlein Bool
-vertWallBoardKlein n =
-  if n `mod` 2 == 1 then
-    kleinFromList $ replicate (min 20 n) $ replicate (n `div` 2) False ++ True:replicate (n `div` 2) False
-  else
-    kleinFromList $ replicate (min 20 n) $ replicate ((n `div` 2)-1) False ++ True:replicate (n `div` 2) False
-
-{-15 16
+{- 3 4 5 6 7 8
+14 15 16
 30 31 32
-64 65 -}
+61 62 63 64
+
+w@(s,_) -> (s, f w-}

@@ -35,6 +35,19 @@ diagWallBoard n = map (\x -> replicate x False ++ True:replicate (n-1-x) False) 
 diagWallBoardSlopeHalf :: Int -> [[Bool]]
 diagWallBoardSlopeHalf n = map (\x -> replicate (2*x) False ++ True:True:replicate (n-2-(2*x)) False) [0,1..((n-1) `div` 2)]
 
+vertWallBoard :: Int -> [[Bool]]
+vertWallBoard n =
+  if n `mod` 2 == 1 then
+    replicate n $ replicate (n `div` 2) False ++ True:replicate (n `div` 2) False
+  else
+    replicate n $ replicate ((n `div` 2)-1) False ++ True:replicate (n `div` 2) False
+
+setCenterFalse :: [[Bool]] -> [[Bool]]
+setCenterFalse board =
+  let (as, (b:bs)) = splitAt (length board `div` 2) board
+      (as', (_:bs')) = splitAt (length b `div` 2) b
+    in as ++ (as' ++ (False:bs')):bs
+
 glider :: [[Bool]]
 glider = [[False, True, False],[False, False, True],[True,True,True]]
 

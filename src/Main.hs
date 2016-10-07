@@ -37,7 +37,7 @@ prettyShow (ZpMobius n as x bs) = show n ++ (unlines $ map show as) ++ "\n" ++ s
 
 showGame :: (PlaneZip p) => p Bool -> String
 showGame p =
-  let xs = getSquare 20 p
+  let xs = getSquare 40 p
     in unlines $ map (\(n,unnumberedLines) -> (printf "%03d" n)++unnumberedLines++(printf "%03d" n)) $ zip [(1::Int)..] $ map (map (\x -> if x then 'X' else ' ')) xs
     
 main :: IO ()
@@ -52,6 +52,9 @@ main' speed board = do
   main' speed $ extend gameOfLifeRule board
 
 
-prob = last $ iterateN 18 (extend gameOfLifeRule) $ kleinFromList $ padBoardCenter 11 11 glider
+{-prob = last $ iterateN 18 (extend gameOfLifeRule) $ kleinFromList $ padBoardCenter 11 11 glider
 prob' = last $ iterateN 10 boundedLeftMvKlein prob
-prob'' = last $ iterateN 6 (\(PlaneZipKlein p) -> PlaneZipKlein $ leftMv p) prob'
+prob'' = last $ iterateN 5 (\(PlaneZipKlein p) -> PlaneZipKlein $ leftMv p) prob'
+p = last $ iterateN 6 (\(PlaneZipKlein p) -> PlaneZipKlein $ leftMv p) prob'-}
+
+--watch: main' 400000 $ kleinFromList $ diagWallBoard 32
