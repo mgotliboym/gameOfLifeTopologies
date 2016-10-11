@@ -1,0 +1,9 @@
+*~
+*.md
+dist/
+.stack-work/
+.emacs.*
+*.aux
+*.prof
+*.hp
+*.ps

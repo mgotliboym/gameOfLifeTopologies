@@ -19,10 +19,10 @@ version:             0.1.0.0
 -- description:         
 
 -- The license under which the package is released.
-license:             None
+-- license:             None
 
 -- The file containing the license text.
-license-file:        LICENSE
+--license-file:        LICENSE
 
 -- The package author(s).
 author:              Marc
@@ -58,13 +58,17 @@ executable gameOfLife
   main-is:             Main.hs
   
   -- Modules included in this executable, other than Main.
-  -- other-modules:       
+  other-modules: BoardCreation,
+                 Class,
+                 InfPlane,
+                 Klein,
+                 Torus
   
   -- LANGUAGE extensions used by modules in this package.
   -- other-extensions:    
   
   -- Other library packages from which modules are imported.
-  build-depends:       base >=4.6 && <4.7,
+  build-depends:       base >=4.9 && <4.10,
                        comonad,
                        ansi-terminal
   
@@ -72,7 +76,7 @@ executable gameOfLife
   hs-source-dirs:      src
 
   -- ghc options used in compilation
-  ghc-options:      -Wall
+  -- ghc-options:      -Wall -O2
                        
   -- Base language which the package is written in.
   default-language:    Haskell2010

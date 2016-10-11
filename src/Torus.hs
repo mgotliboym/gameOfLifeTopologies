@@ -1,3 +1,5 @@
+{-# LANGUAGE MultiParamTypeClasses, KindSignatures, FlexibleInstances #-}
+
 module Torus where
 
 import Control.Comonad
@@ -37,29 +39,28 @@ instance Comonad ListZipTorus where
       (iterateN (length $ left a) leftMv a) a
       (iterateN (length $ right a) rightMv a)
 
-data PlaneZipTorus a = PlaneZipTorus (ListZipTorus (ListZipTorus a)) deriving (Show)
+data PlaneZipTorus z1 z2 a = PlaneZipTorus (z1 (z2 a)) deriving (Show)
 
 innerDuplicateN :: ListZipTorus (ListZipTorus a) -> ListZipTorus (ListZipTorus (ListZipTorus a))
 innerDuplicateN a = build  (iterateN (length $ left $ focus a) (fmap leftMv) a) a
                            (iterateN (length $ right $ focus a) (fmap rightMv) a) 
 
-instance Functor PlaneZipTorus where
+instance Functor (PlaneZipTorus ListZipTorus ListZipTorus) where
   fmap f (PlaneZipTorus zs) = PlaneZipTorus $ fmap (fmap f) zs --listzip fmap
-instance Comonad PlaneZipTorus where
+instance Comonad (PlaneZipTorus ListZipTorus ListZipTorus) where
   extract (PlaneZipTorus zs) = extract $ extract zs --listzipinf extract
   --duplicate :: PlaneZipTorus a -> PlaneZipTorus (PlaneZipTorus a)
   duplicate (PlaneZipTorus p) =
     PlaneZipTorus $ (fmap $ fmap $ PlaneZipTorus) $ innerDuplicateN $ innerDuplicateN p
 
-instance PlaneZip PlaneZipTorus where
+instance PlaneZip PlaneZipTorus ListZipTorus ListZipTorus where
+  unwrap (PlaneZipTorus zs) = zs
   getTrueSquare (PlaneZipTorus zs) =
     let (top:mid:bottom:[]) = getRow zs
       in getRow top : getRow mid : getRow bottom : []
     where getRow xs = (focus $ leftMv xs) : (focus xs) : (focus $ rightMv xs) : []
-  getSquare n (PlaneZipTorus zs) = zipTake2 n zs
-  getSelf (PlaneZipTorus zs) = focus $ focus $ zs
-
-torusFromList :: [[Bool]] -> PlaneZipTorus Bool
+  
+torusFromList :: [[Bool]] -> PlaneZipTorus ListZipTorus ListZipTorus Bool
 torusFromList start =
   let midH = length start `div` 2
       midW = (length $ head start) `div` 2
@@ -68,7 +69,7 @@ torusFromList start =
   in PlaneZipTorus $ ListZipTorus (reverse as') x' bs'
 
 
-startBoardTorus :: PlaneZipTorus Bool
+startBoardTorus :: PlaneZipTorus ListZipTorus ListZipTorus Bool
 startBoardTorus =
   PlaneZipTorus $ ListZipTorus
     ((ListZipTorus (replicate 5 False) True (replicate 5 False)) :
@@ -77,7 +78,7 @@ startBoardTorus =
     ((ListZipTorus (True : replicate 4 False) True (True : replicate 4 False)) :
        replicate 4 (ListZipTorus (replicate 5 False) False (replicate 5 False)))
 
-startBoardTorusW :: PlaneZipTorus Bool
+startBoardTorusW :: PlaneZipTorus ListZipTorus ListZipTorus Bool
 startBoardTorusW =
   PlaneZipTorus $ ListZipTorus
     ((ListZipTorus (replicate 5 False ++ True:replicate 4 False) False (replicate 10 False)) : --row above middle
@@ -86,6 +87,6 @@ startBoardTorusW =
     ((ListZipTorus (False : replicate 4 False ++ True:replicate 4 False) False (False : replicate 9 False)) : --row below middle
        replicate 9 (ListZipTorus (replicate 5 False ++ True:replicate 4 False) False (replicate 10 False))) --bottom middle rows
 
-startBoardGliderWallCorner :: PlaneZipTorus Bool
+startBoardGliderWallCorner :: PlaneZipTorus ListZipTorus ListZipTorus Bool
 startBoardGliderWallCorner =
   torusFromList $ padBoardCenter 15 15 $ padBoardTRCorner 6 6 glider `orBoards` diagWallBoard 15

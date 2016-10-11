@@ -1,7 +1,5 @@
 module BoardCreation where
 
---import Class
-
 padBoardCenter :: Int -> Int -> [[Bool]] -> [[Bool]]
 padBoardCenter height width start =
   let (above,extraH) = (height - length start) `divMod` 2
@@ -32,15 +30,34 @@ orBoards = zipWith (zipWith (||))
 diagWallBoard :: Int -> [[Bool]]
 diagWallBoard n = map (\x -> replicate x False ++ True:replicate (n-1-x) False) [0,1..(n-1)]
 
-diagWallBoardSlopeHalf :: Int -> [[Bool]]
-diagWallBoardSlopeHalf n = map (\x -> replicate (2*x) False ++ True:True:replicate (n-2-(2*x)) False) [0,1..((n-1) `div` 2)]
+--diagWallBoardSlopeHalf :: Int -> [[Bool]]
+--diagWallBoardSlopeHalf n = map (\x -> replicate (2*x) False ++ True:True:replicate (n-2-(2*x)) False) [0,1..((n-1) `div` 2)]
 
-vertWallBoard :: Int -> [[Bool]]
-vertWallBoard n =
-  if n `mod` 2 == 1 then
-    replicate n $ replicate (n `div` 2) False ++ True:replicate (n `div` 2) False
-  else
-    replicate n $ replicate ((n `div` 2)-1) False ++ True:replicate (n `div` 2) False
+vertWallBoard :: Int -> Int -> [[Bool]]
+vertWallBoard height width =
+  replicate height $
+    let leftLen = 
+           if width `mod` 2 == 1 then
+             width `div` 2
+           else
+             (width `div` 2)-1
+    in replicate leftLen False ++ True:replicate (width `div` 2) False
+
+horizWallBoard :: Int -> Int -> [[Bool]]
+horizWallBoard height width =
+  let emptyRow = replicate width False
+      leftLen = 
+        if height `mod` 2 == 1 then
+          height `div` 2
+        else
+          (height `div` 2)-1
+  in replicate leftLen emptyRow ++ (replicate width True):replicate (height `div` 2) emptyRow
+
+vertWallBoardSquare :: Int -> [[Bool]]
+vertWallBoardSquare n = vertWallBoard n n
+horizWallBoardSquare :: Int -> [[Bool]]
+horizWallBoardSquare n = horizWallBoard n n
+
 
 setCenterFalse :: [[Bool]] -> [[Bool]]
 setCenterFalse board =
@@ -53,6 +70,10 @@ glider = [[False, True, False],[False, False, True],[True,True,True]]
 
 upGlider :: [[Bool]]
 upGlider = reverse glider
+
+
+rPentomino :: [[Bool]]
+rPentomino = [[False,True,True],[True,True,False],[False,True,False]]
 
 --pt :: Int -> [Int]
 --pt 0=[1]; pt n=zipWith (+) (0:pt (n-1)) (pt (n-1)++[0])
