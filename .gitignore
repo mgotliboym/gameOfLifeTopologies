@@ -7,3 +7,6 @@ dist/
 *.prof
 *.hp
 *.ps
+*.out
+*.log
+*.pdf
