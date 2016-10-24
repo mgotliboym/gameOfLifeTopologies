@@ -1,66 +1,14 @@
 \documentclass[12pt,letterpaper]{article}
-\usepackage[pdftex]{graphicx}
-\usepackage{alltt}
-\usepackage[margin=1in]{geometry}
-\usepackage{amsmath, amsthm, amssymb}
-\usepackage{verbatim}
-\usepackage{ragged2e}
-\usepackage{enumitem}
-\usepackage{xfrac}
-\setlist{parsep=0pt,listparindent=\parindent}
-\setlength{\RaggedRightParindent}{\parindent}
-\newcommand{\degree}{\ensuremath{^\circ}}
-\usepackage{accents}
-\let\thinbar\bar
-\newcommand\thickbar[1]{\accentset{\rule{.4em}{.8pt}}{#1}}
-\let\bar\thickbar
-\usepackage{standalone}
-%\usepackage{hyperref}
-\usepackage{venndiagram}
-\usepackage{mathtools}
-\usepackage{bm}
-\usepackage[mathscr]{eucal}
-\usepackage{cleveref}
-
-\newcommand{\R}{\ensuremath{\mathbb{R}}}
-\newcommand{\Q}{\ensuremath{\mathbb{Q}}}
-\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
-\newcommand{\card}{\ensuremath{\operatorname{card }}}
-\newcommand{\Mod}[1]{\ensuremath{\;\;(\operatorname{mod}\;#1)}}
-\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
-\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
-\DeclarePairedDelimiter\abs{\lvert}{\rvert}
-\DeclarePairedDelimiter\norm{\lVert}{\rVert}
-\DeclarePairedDelimiter\angled{\langle}{\rangle}
-\newcommand\inv[1]{\ensuremath{{#1}^{-1}}}
-% \newcommand\arrowdef{\ensuremath{\stackrel{\mathclap{\normalfont\mbox{def}}}{\iff}}}
-\newcommand\arrowdef{\mathrel{\overset{\makebox[0pt]{\mbox{\normalfont\scriptsize\sffamily def}}}{\iff}}}
-
-\newcommand{\divides}{\bigm|} % http://tex.stackexchange.com/questions/117032/divides-not-divides-and-cardinalities
-\newcommand{\ndivides}{%
-  \mathrel{\mkern.5mu % small adjustment
-    % superimpose \nmid to \big|
-    \ooalign{\hidewidth$\big|$\hidewidth\cr$\nmid$\cr}%
-  }%
-}
-
-\crefname{prop}{proposition}{propositions}
-\crefname{cor}{corollary}{corollaries}
-\crefname{dfn}{definition}{definitions}
+\input{preamble.sty}
 
 \begin{document}
-\theoremstyle{plain}
-\newtheorem{prop}{Proposition}[section]
-\newtheorem{cor}{Corollary}[prop]
-\theoremstyle{definition}
-\newtheorem{dfn}[prop]{Definition}
 
 \section{Introduction}
-We define some basic terminology related to Conway's Game of Life played on a torus, with a vertical wall as the starting configuration. We assume boards are of height $k>5$, and specify the width, which may also be referred to as the size. Any given numeric variable is a natural unless specified otherwise. 
+We define some basic terminology related to Conway's Game of Life played on a torus, with a vertical wall as the starting configuration. We assume boards are of height $k\geq 5$, and specify the width, which may also be referred to as the size. Any given numeric variable is a natural unless specified otherwise. 
 \begin{dfn}
   Let $G_N(S)$ be a function that produces the board of size $N$ after $S$ steps, using our starting configuration, $G_N(0)$, defined below.
 \end{dfn}
-\begin{dfn}{Board summation}
+\begin{dfn}[Board summation]
   Let the sum of two boards, $G_N(S)\oplus G_M(R)$ be the two boards placed adjacent to each other. $010\oplus 010 = 010010$.
 \end{dfn}
 \begin{dfn}
@@ -70,15 +18,15 @@ We define some basic terminology related to Conway's Game of Life played on a to
 \begin{dfn}
   For all $2k+1$, $G_{2k+1}(0)= k\cdot 0 \oplus 1 \oplus k\cdot 0$. For all $2k$, $G_{2k}(0) = k-1\cdot 0 \oplus 1 \oplus k\cdot 0$. 
 \end{dfn}
-\begin{dfn} \label{cycles}
+\begin{dfn}\label{cycles}
   The {\bf time to cycle} of a board-evolution, $tc(G_w)$, is the minimum $s$ such that there exists a $t<s$ with $G_w(s)=G_w(t)$. The {\bf fuse length}, $fuse(G_w)$ is $t$. 
 \end{dfn}
-\begin{dfn} \label{cluster}
+\begin{dfn}\label{cluster}
   A {\bf cluster} of size $n$ is a largest possible contiguous segment of 1s, of length $n$,  that is, $0\oplus n\cdot 1\oplus 0$ is a cluster of size $n$. A board contains a cluster of size $n$ if it can be written $A\oplus n B$, where either $A$ is empty, or $A=A'\oplus 0$ and either $B$ is empty or $B=0\oplus B'$. We often mention clusters in the context of the seen clusters of a board with width $w$ --- the set of all $n$ such that a cluster of length $n$ exists in $G_w(s)$ for some $s$. 
 \end{dfn}
 
 \noindent We proceed to prove some basic propositions. Trivially, we show that any odd board is symmetrical.
-\begin{prop} \label{symmetry}
+\begin{prop}[Symmetry]\label{symmetry}
   For a board of width $w=2n+1$, a board $G_w(s)$ for any $s$ can be written $x_1\oplus x_2\oplus\cdots\oplus x_n\oplus c \oplus x_n\oplus\cdots\oplus x_2\oplus x_1$.
 \end{prop}
 \begin{proof}
@@ -86,7 +34,7 @@ We define some basic terminology related to Conway's Game of Life played on a to
 \end{proof}
 
 \noindent Our first more serious proposition, we show that a board of size $2^n-1$ annihilates in $2^{n-1}$ steps, for integers $n\geq 3$.
-\begin{prop} \label{Power2} % About boards of width 2^n-1
+\begin{prop}\label{Power2} % About boards of width 2^n-1
   Let $w(n)=2^n-1$, to generate the width of the board, and $s(n)=2^{n-1}$ to generate the number of steps for the board to annihilate. Then:\\
   \vspace*{-1.3em}
   \begin{enumerate}[label=(\alph*)]
@@ -100,8 +48,6 @@ We define some basic terminology related to Conway's Game of Life played on a to
 \begin{proof}
 We have as a base case that it annihilates on size 3 in 2 steps, the states prior to annihilation are 010 and 111. On 7 it annihiliates in 4 steps. On a board of size 7, the second generation, 0011100 lives to create a new state, which could be modeled as two adjacent boards of size 3 in the start state with a gap of one between them: 0100010. The final state non-annihilated is then 1110111.
 
-%We denote a sequence of digits of length $W$ which we do not wish to specify at the time by $[W]$. They may be a specific pattern, but they are excluded for convenience. Sometimes, the length of the board is constrained, we know the total width --- then for one sequence of digits we can write $[\dots]$ rather than specifying the width, since it can be calculated. 
-
 We assume the hypothesis up to some $n$, proceeding by strong induction, and prove it for $n+1$
 
 By part~\ref{d}, $G_{w(n+1)}(s(n)-1)$ will be a board $G_{w(n)}(s(n)-1)$ padded with zeros. By part 2, it will be alive at the `edges'. Note that $w(n+1)-w(n)=(2^{n+1}-1-2^{n}+1)/2=2^{n-1}$, so we have
@@ -113,22 +59,28 @@ By part~\ref{d}, these two boards $G_{w(n)}(0)$ will advance through $s(n)-1$ st
 %Finally, from the proof of~\ref{a} we see that by removing extra padding 0s we get exactly the result~\ref{e}. We can remove them due to part~\ref{d}. Note that we need not include this part in the induction, we could have proven it separately.
 \end{proof}
 
+\begin{cor}\label{SingleWallPairPow2}
+  For any board of width $W>2^n$, $G_W(2^k)=a\cdot 0\oplus 1\oplus 2^{k+1}-1\cdot 0\oplus 1\oplus \cdot 0$, for an $a$ appropriate for the width, for $k$ such that $2^{k+1}<W$. For even board the number of 0s on one side must be adjusted by one.
+\end{cor}
+\begin{proof}
+  This follows directly from parts~\ref{a} and~\ref{d} above, and is simply a convenient reformulation.
+\end{proof}
+
 \noindent We generalize part~\ref{d} above to boards of arbitrary odd width.
-\begin{prop} \label{OddBoardFirstEdge} % About first time a board reaches the edge, and embedding it in larger boards
+\begin{prop}\label{OddBoardFirstEdge} % About first time a board reaches the edge, and embedding it in larger boards
   For any $k$, the board $G_{2k+1}(k)$ (and all boards up to it) arrives to its state without ever interacting at the `edges', that is, for all odd $W=2w+1>2k+1$ we have $G_W(k) = w-k \cdot 0 \oplus G_{2k+1}(k)\oplus w-k\cdot 0$. For all even $W=2w>2k+1$ we have $G_W(k) = w-k-1\cdot 0 \oplus G_{2k+1}(k)\oplus w-k\cdot 0$. \\
   Furthermore, $G_{2k+1}(k)$ is alive at both its `edges', $G_{2k+1}(k)=1\oplus A\oplus 1$, with some unspecified $A$.
 \end{prop}
 \begin{proof}
-  %Suppose $W=2w+1$. Let $W$'s binary representation be $b_nb_{n-1}\dots b_1b_0$, with each $b_i\in\{0,1\}$, and $b_n=1$. Then by~\ref{Power2} $G_W(2^{n-1})$ is the board of size $2^n-1$ embedded in $W$ after $ $
-  % 13 = 1101
-  % 15 = 1111
+  % Suppose $W=2w+1$. Let $W$'s binary representation be $b_nb_{n-1}\dots b_1b_0$, with each $b_i\in\{0,1\}$, and $b_n=1$. Then by~\ref{Power2} $G_W(2^{n-1})$ is the board of size $2^n-1$ embedded in $W$ after $ $
+  
   We proceed by induction, this is true for simple base cases $W=3,4,5$. Consider odd $W=2k+1$, and suppose the hypothesis is true up to $k$; we prove it for $k+1$, $W=2k+3$. Then note the board $G_{2k+3}(k)=0\oplus G_{2k+1}(k)\oplus 0$, and in particular $G_{2k+3}(k)=01\oplus A\oplus 10$. The next generation is clearly the same even if the board were widened with any number of 0s padded on any side, and will have 1s at its edges. \\
   In particular, if we add one 0 on the right, we see that the hypothesis holds for even boards.
 \end{proof}
 
-We seek to prove that for boards of width $4k+2, 4k+3, 4k+4$, the survival, cycle length, and fuse length will be equal. To do this, we will need some more development. In particular, we need some more information about the evolution of boards with width 3 modulo 4.
+We seek to prove that for boards of width $4k+2, 4k+3, 4k+4$, the survival, time to cycle, and fuse length will be equal. To do this, we will need some more development. In particular, we need some more information about the evolution of boards with width 3 modulo 4.
 
-\begin{prop} \label{onesSepByOddZeros} %boards 4k+3 are 1s sep by odd (3 mod 4) segments of 0s
+\begin{prop}\label{onesSepByOddZeros} %boards 4k+3 are 1s sep by odd (3 mod 4) segments of 0s
   Boards of width $w=4k+3$ after an even number of steps can always be written as single 1s separated by segments of 0s with length 3 modulo 4, except at the edges where it is merely odd. That is, in the following format:
   $$G_w(2s)=b\cdot 0 \oplus (1 \oplus a_1\cdot 0 \oplus 1\oplus a_2\cdot 0\oplus\cdots \oplus 1\oplus a_n\cdot 0) \oplus 1 \oplus b\cdot 0$$
   where each $a_i\equiv 3 \Mod{4}$, and $b$ is odd.
@@ -143,79 +95,124 @@ We seek to prove that for boards of width $4k+2, 4k+3, 4k+4$, the survival, cycl
 \begin{proof}
   Clearly for any such $w$ with $k\geq 1$, this holds for a base case of steps 0, and for that matter step 2. Suppose it holds up to $2s$, we show it holds at step $2s+2$. The next step $G_w(2s+1)$ is $$b-1\cdot 0\oplus (111\oplus a_1-2\cdot 0 \oplus 111\oplus a_2-2\cdot 0\oplus\cdots\oplus 111 \oplus a_n-2\cdot 0)\oplus 111 \oplus b-1$$ exactly as in the proposition. For each $a_i$, $a_i-2\equiv 1 \Mod 4$. \\
   Then for $G_w(2s+2)$ we break off into two cases. Suppose $b>1$. Then we define a sequence $(a')$ as follows. If $a_1=3$, collect as many terms after $a_2,a_3,\dots,a_i$ such that each term is also 3. Set $a'_1=i*4-1$. Else, $a'_1=a_1-2$. In both these cases, $a'_1\equiv 3 \Mod 4$. Repeat the procedure for $a'_2$ starting from $a_{i+1}$ in the first case, and $a_2$ in the second case. This generates a sequence of length $m$. So, $G_w(2s+2) = b-2\cdot 0\oplus (1\oplus a'_1\cdot 0\oplus 1 \oplus a'_2\cdot 0 \oplus\cdots\oplus 1\oplus a'_m\cdot 0)\oplus 1\oplus b-2\cdot 0$. This satisfies the hypothesis. A note before proceeding to the other case: $m$ is odd due to symmetry,~\cref{symmetry}. If every $a_i=3$, then  \\
-  In the other case, suppose $b=1$. Define $(a')$ the same way. Then if $a_1=3$ (which by symmetry implies $a_n=3$, then $G_w(2s+2)= a'_1\cdot 0\oplus (1\oplus a'_2\cdot 0\oplus 1\oplus a'_3\cdot 0\oplus\cdots\oplus 1\oplus a'_{m-1}\cdot 0)\oplus 1\oplus a'_m\cdot 0$. A subtlety to consider: suppose $m=1$. Then the board annihilates. Otherwise, since $m$ is odd, we have an $a'_i$ on either side and at least one in the center, as desired. 
+  In the other case, suppose $b=1$. Define $(a')$ the same way. Then if $a_1=3$ (which by symmetry implies $a_n=3$), then $G_w(2s+2)= a'_1\cdot 0\oplus (1\oplus a'_2\cdot 0\oplus 1\oplus a'_3\cdot 0\oplus\cdots\oplus 1\oplus a'_{m-1}\cdot 0)\oplus 1\oplus a'_m\cdot 0$. A subtlety to consider: suppose $m=1$. Then the board annihilates. Otherwise, since $m$ is odd, we have an $a'_i$ on either side and at least one in the center, as desired. 
   If $a_1\neq 3$, and so $a_n\neq 3$, we get $G_w(2s+2) = 000\oplus(1\oplus a'_1\cdot 0\oplus 1\oplus a'_2\cdot 0\dots\oplus 1\oplus a'_m\cdot 0)\oplus 1000$. 
 \end{proof}
 
-\begin{cor} \label{cluster3mod4cor}
+\begin{cor}\label{cluster3mod4cor}
   Boards of width $w=4k+3$ do not produce cluster sizes other than $1,3,6$
 \end{cor}
 \begin{proof}
   Simply by examining a possible generation $G_w(s)$ as specified above, we see that no other size is possible.
 \end{proof}
 
-\begin{cor} \label{3mod4annihilateOnEven}
+\begin{cor}\label{3mod4annihilateOnEven}
   If a board of width $w=4k+3$ annihilates, it does so on an even step.
 \end{cor}
 \begin{proof}
   This is immediate, the only case where annihilation could occur was pointed out, it occurs as a result of an even step.
 \end{proof}
-\begin{prop} \label{cycleOnEven3mod4}
-  If a board of width $w=4k+3$ cycles, it does so on an even step, that is, $tc(G_w)$ is even. Also $fuse(G_w)$ is even. 
+\begin{prop}\label{cycleOnEven3mod4}
+  If a board of width $w=4k+3$ survives, $tc(G_w)$ will be even, as will $fuse(G_w)$. 
 \end{prop}
 \begin{proof}
   Suppose $tc(G_w)=s'$ were odd, that is, $2s+1=s'$ and there is a $t'<s'$ such that $G_w(t')=G_w(s')$. First, $t'$ is odd, since if it were even every cluster on $G_w(t')$ would be of size 1, whereas $G_w(2s+1)$ has clusters of size 3 and possibly 6. Let $t'=2t+1$. \\
   We show that $G_w(2t)=G_w(2s)$, which contradicts that $tc(G_w)=s'$, since $s'$ must be the least step with this property. Indeed, this follows almost immediately from~\cref{onesSepByOddZeros}. On every odd step new cells are born, no cells die. Therefore, $G_w(2t+1)$ has a unique predecessor board reachable from $G_w(0)$. We will not write it explicitly, but it is the board reached by letting the center of each cluster of 3 (and treating clusters of 6 as two clusters of 3 in this procedure) be alive, and every other cell be dead.
 \end{proof}
 
-\begin{prop} \label{cluster3mod4} %Boards of width 3 mod 4 make clusters 1,3,6
+\begin{prop}\label{cluster3mod4} %Boards of width 3 mod 4 make clusters 1,3,6
   Boards of width $w=4k+3$ will produce exactly clusters of sizes $1,3,6$ at some point in their life cycles, starting with $k=1$. No other cluster sizes will be produced.
 \end{prop}
 \begin{proof}
   Clearly from $G_w(0)$ and $G_w(1)$ we get clusters of size $1,3$. We will get a cluster of size $6$ at $G_w(2k+1)$, which by~\cref{OddBoardFirstEdge} is the first time the board reaches an `edge.' We prove this by induction; it is true for base case $k=1$. Suppose it holds for $k$, we show it holds for $k+1$. $G_{4k+7}(2k+1) = 00\oplus G_{4k+3}(2k+1)00 = 00111\oplus A\oplus 11100$ by the induction hypothesis. Then $G_{4k+7}(2k+2)=01000\oplus B\oplus 00010$ and $G_{4k+7}(2k+3)=1110\oplus C\oplus 0111$. This is exactly a cluster of 6, at the correct time. The other direction holds by~\cref{cluster3mod4cor}.
 \end{proof}
 
-\begin{prop}
-  % For boards of width $4k+2, 4k+3, 4k+4$, the survival, cycle length, and fuse length will be equal.
-  $0\oplus G_{4k+2}(2s)=G_{4k+3}(2s)$ and $G_{4k+3}(s)\oplus 0=G_{4k+4}(s)$, for all $s$.
-\end{prop}
+\addtocounter{prop}{1}
+\begin{innerProp}
+  $0\oplus G_{4k+2}(2s)=G_{4k+3}(2s)$, for all $s$.
+\end{innerProp}
 \begin{proof}
-  %At step $s=0$, we have $G_{4k+3}(0)=G_{4k+2}(0)$. 
-  We have by~\cref{onesSepByOddZeros} that $G_{4k+3}(2s)$ is of the form $b\cdot 0 \oplus (1 \oplus a_1\cdot 0 \oplus 1\oplus a_2\cdot 0\oplus\cdots \oplus 1\oplus a_n\cdot 0) \oplus 1 \oplus b$
-  where each $a_i\equiv 3 \Mod{4}$, and $b$ is odd. \\
+  We have by~\cref{onesSepByOddZeros} that $G_{4k+3}(2s)$ is of the form $b\cdot 0 \oplus (1 \oplus a_1\cdot 0 \oplus 1\oplus a_2\cdot 0\oplus\cdots \oplus 1\oplus a_n\cdot 0) \oplus 1 \oplus b$ where each $a_i\equiv 3 \Mod{4}$, and $b$ is odd. \\
   We proceed by induction. Suppose that for each even step $2s$, we have $G_{4k+3}(2s)=0\oplus G_{4k+2}(2s)$. The base case of $s=0$ is clear. \\
   Suppose at step $2s$ the board $G_{4k+3}(2s)$ is not near an edge, that is, $b>1$. Then the induction hypothesis clearly holds for $2s+2$. \\
   Suppose $G_{4k+3}(2s)=01\oplus A\oplus 10$ is near the `edge', that is, in the above format $b=1$. Then we have the following situation:
   \begin{align*}
-    0100\oplus &A \oplus 0010 \\
-    111\oplus &B \oplus 111 \\
-    00\oplus &C \oplus 00 \\
+    0100&\oplus A \oplus 0010 \\
+    111&\oplus B \oplus 111 \\
+    00&\oplus C \oplus 00
   \end{align*}
   where each new line is a new generation, starting with $G_{4k+3}(2s)$. Similarly, for this situation with $G_{4k+2}(2s)$ we get
   \begin{align*}
-    100\oplus &A\oplus 0010 \\
-    11\oplus &B\oplus 110 \\
-    0\oplus &C\oplus 00 \\
+    100 &\oplus A\oplus 0010 \\
+    11 &\oplus B\oplus 110 \\
+    0 &\oplus C\oplus 00
   \end{align*}
-  Which gets the desired result. For $4k+4$, the entire part is clear, writing this situation similarly gets
+  %\vspace*{-1cm}
+\end{proof}
+\begin{innerProp}
+  $G_{4k+3}(s)\oplus 0=G_{4k+4}(s)$, for all $s$.
+\end{innerProp}
+\begin{proof}
+  The proof proceeds identically to the above, except for the final step, where we show that both the step $2s+1$ and $2s+2$ proceed identically to how they do on boards of width $4k+3$, simply with a zero appended on the right: \\
+  Starting with $G_{4k+4}(2s)$, where $2s$ happens to be near an edge, we get
   \begin{align*}
-    0100\oplus &A \oplus 00100 \\
-    111\oplus &B \oplus 1110 \\
-    00\oplus &C \oplus 000 \\
+    0100&\oplus A \oplus 00100 \\
+    111&\oplus B \oplus 1110 \\
+    00&\oplus C \oplus 000 
   \end{align*}
 \end{proof}
 
-\begin{cor} \label{4mod4like3mod4}
+\begin{cor}\label{4mod4like3mod4}
   A board with width $w=4k+4$ has the same time to cycle, fuse length, and survival as the board with width $4k+3$. It has cluster sizes of $1,3$. 
 \end{cor}
 \begin{proof}
   This is immediate. The cluster sizes are the same, except that 6 never shows up. In $4k+3$ it shows up at the `edge,' however here that particular type of cluster is broken up by the zero appended to the right.
 \end{proof}
 
-\begin{cor} \label{2mod4Characterization}
-  A board with width $w=4k+2$ annihilates or survives as the board with width $4k+3$ does, and has the same fuse length and cycle time. Its clusters are $1,2,3$. 
+\begin{cor}\label{2mod4Characterization}
+  A board with width $w=4k+2$ annihilates or survives as the board with width $4k+3$ does, and has the same fuse length and time to cycle. Its clusters are $1,2,3$. 
 \end{cor}
 \begin{proof}
-  The annihilation or survival follows from the associated proposition and~\cref{3mod4annihilateOnEven}. The fuse length and cycle time follows~\cref{cycleOnEven3mod4}. The clusters are visible in the above proposition.
+  The annihilation or survival follows from the associated proposition and~\cref{3mod4annihilateOnEven}. The fuse length and time to cycle follows~\cref{cycleOnEven3mod4}. The clusters are visible in the above proposition.
+\end{proof}
+
+We have been using the notion of the `edges' of the board without defining it, it has been based simply on the intuition of a torus seen as a rectangle with connected edges. However, the torus itself does not have true edges, so in what sense does it make sense to talk about them? We seed the board with an initial living `wall'. This `wall' we say is at the center of the torus, arbitrarily. The results would be the same if it were in any other location, though the 2-d display might look different. We call the opposite point on the torus the antipode, it is roughly what we previously called the `edges'. There is a minor issue --- there might not be an exact antipode, since we have a discrete quantity of cells. On an odd-width board, there is an odd amount of zeros on either side of the center, and so no single cell can be the antipode --- we call the two cells farthest from the center the antipodes. We will see that this is a reasonable definition.
+
+Since the center is chosen arbitrarily, we can at any moment `refocus' and look at the board with a new center, a useful strategy. 
+\begin{prop}\label{SymmetricAntipode}
+  Let $w=4k+4$. Suppose the board reaches a state $G_w(s)=2^k-1\cdot 0\oplus 1\oplus a\cdot 0\oplus 1\oplus 2^k\cdot 0$, for some $k$ such that $2^{k+1}<W$ and $2^{k+1}<a$. Suppose $s$ is the first time this state has been seen, that is, there is no $t$ such that $t<s$ and $G_w(t)=G_w(s)$. Then there has been a step $t=2^k$ such that $G_w(t)=b\cdot 0 \oplus 1\oplus 0\cdot 2^{k+1}-1\cdot 1\oplus b+1\cdot 0$, with $t<s$, and $G_w(2s-t)=G_w(t)$. 
+\end{prop}
+\begin{proof} Recenter the board at the antipode, and note that now the board looks exactly like $b\cdot 0 \oplus 1\oplus 0\cdot 2^{k+1}-1\cdot 1\oplus b+1\cdot 0$, the final `$+1$' adjusting for even width. In effect, this is a previously seen state, except that it exists at the antipode. As seen centered at the antipode, it is a previously seen by~\cref{SingleWallPairPow2}, it occurred at exactly $t=2^k$. Since it took $s-t$ steps to get to this state again, but at the antipode, a further $s-t$ steps will bring us exactly back to $G_w(t)$.
+\end{proof}
+\begin{cor}\label{SymmetricAntipodeAll}
+  For boards of width $w=4k+3$ we have the same, except it occurs when the board reaches a state with one less 0 on the right. For $w=4k+2$, it is again the same with one less 0 on both sides. 
+\end{cor}
+\begin{proof}
+  This is evident by~\cref{4mod4like3mod4} and~\cref{2mod4Characterization}. 
+\end{proof}
+%\begin{cor}
+%  Let $w$ be a width such that $w\equiv 2,3,4 \Mod 4$. Suppose the board reaches a state as %described in the associated proposition, at step $s$, with $t$ the value such that %$G_w(t)=G_w(2s-t)$. Then $fuse(G_w)\leq t$. 
+%\end{cor}
+We will be using these boards with a gap of $2^k-1$ zeros in the center often, so for convenience we define the following.
+\begin{dfn}
+  Let $K_w(k)=a\cdot 0\oplus 1\oplus 2^k-1\cdot 0\oplus a\cdot 0$, with an adjustment for even boards. Let $K_w'(k)$ be $2^{k-1}-1\cdot 0\oplus a\oplus 2^{k-1}-1\cdot 0$, with a similar adjustment.
+\end{dfn}
+
+\begin{prop}\label{BetweenPows2}
+  Let $w=2^k+2^{k+1}-1$, then for $k\geq 2$, $fuse(G_w)=2^{k-1}$ and $tc(G_w)=2^{k+1}-2^{k-1}$.
+\end{prop}
+\begin{proof}
+  By~\cref{SingleWallPairPow2}, %$G_w(2^k)=a\cdot 0\oplus 1\oplus 2^{k+1}-1\cdot 0\oplus 1\oplus a\cdot 0$,
+  $G_w(2^k)=K_w(k+1)$, with the number of 0s on the edges being $(2^k+2^{k+1}-1-(2^{k+1}-1)-2)/2=2^{k-1}-1$, that is, $G_2(2^k)=K_w(k+1)=K_w'(k)$ By~\cref{SymmetricAntipodeAll}, we have $G_w(2^{k-1})=G_w(2^k+2^{k-1})$. Since the boards prior to $G_w(2^k)$ follow a pattern described by~\cref{SingleWallPairPow2} without reaching the edges of the board, it is evident that this is in fact the first repeated board, so the fuse and time to cycle are as desired. 
+\end{proof}
+\begin{remark}
+  The first state which will be repeated, $G_W(2^{k-1})$ is known by~\cref{SingleWallPairPow2}, so we have a well fleshed out description of these board-evolutions.
+\end{remark}
+Generalizing, we get the following.
+\begin{cor}
+  Let $w=2^k+2^\alpha-1$, for $k\geq 3$, $2\leq \alpha<k$. Then $fuse(G_w)=2^{\alpha-1}$, and $tc(G_w)=2^k-2^{\alpha-1}$.
+\end{cor}
+\begin{proof}
+  Note that, by~\cref{SingleWallPairPow2}, $G_w(2^{k-1})=K_w(k)=K_w'(\alpha)$. We get the result by the same argument as in the associated proposition.
 \end{proof}
 \end{document}

@@ -49,7 +49,7 @@ showGame p =
 
 main :: IO ()
 main = do --putStrLn $ show $ fst $ survivesOrAnnihilatesExtraInfo $ emptyExBoard  $ torusFromList $ vertWallBoard 5 2045
-  let results = map (\x -> (survivesOrAnnihilatesExtraInfo . emptyExBoard . torusFromList $ vertWallBoard 5 x, x) ) [5,9..147]--[253,249]--[4..2050] --257]
+  let results = map (\x -> (survivesOrAnnihilatesExtraInfo . emptyExBoard . torusFromList $ vertWallBoard 5 x, x) ) [7,11..147]--[253,249]--[4..2050] --257]
   putStrLn $ unlines $ map (show . \((a,_),c) -> (a,c) ) results
 {-main :: IO ()
 main = do
@@ -153,11 +153,11 @@ survivesOrAnnihilatesExtraInfo exboard@(_, board) =
         let boolBoard = getFullBoard nextBoard in
         if boolBoard == emptyBoard then
           --trace ("iterations until result" ++ (show $ length boardsSoFar)) False
-          (dat'{survivedAnnihilated=Annihilated, timeToCycle=length boardsSoFar + 1,
+          (dat'{survivedAnnihilated=Annihilated, timeToCycle=length boardsSoFar,
                 seenClusterSizes=sort $ seenClusterSizes dat'},nextBoard)
           else if boolBoard `elem` boardsSoFar then
-            (dat'{survivedAnnihilated=Survived, timeToCycle=length boardsSoFar + 1,
-                 fuseLength=length boardsSoFar - (fromJust $ elemIndex boolBoard boardsSoFar),
+            (dat'{survivedAnnihilated=Survived, timeToCycle=length boardsSoFar,
+                 fuseLength=length boardsSoFar - (fromJust $ elemIndex boolBoard boardsSoFar) - 1,
                  seenClusterSizes=sort $ seenClusterSizes dat'},nextBoard)
           else f (boolBoard:boardsSoFar) rest
       f _ [] = undefined --it's an infinite list

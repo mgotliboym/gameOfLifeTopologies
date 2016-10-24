@@ -22,7 +22,8 @@ Note: Center is at 2^k+2^{k-1}-1. ALSO: when this fuse length is 2^k+1, the cycl
 --when it's 3, cycle len is 1 less than power of 2
 --5: 3 less than power of 2
 -}
-6.
+6. A board of width 4k+3 creates a pattern of the form a0+1+b0+1+a0 every 2^k steps, until it reaches a point where 2a0 is 2^k-2 for some k, with 2a0>b0.
+
 
 -------------------------------------------------------------
 {-
@@ -129,11 +130,11 @@ always have exactly groups of sizes 1,2,3,6
 --todo: this 2^n-3 / 2^n+15 conjecture, the 2,3,4 mod 4 conjecture
 
 {- fuse lengths of 4n+3, starting at 7 (n=1)
-              0                                    7
-              3  0                                 11
-            3 5  3 0                            19 23 27
-        3 5 3 9  3 5 3 0                  35 39 43 47 51 55 59 
-3 5 3 9 3 5 3 17 3 5 3 9 3 5 3 0
+              0                                          7
+              3  0                                       11
+            3 5  3 0                                  19 23 27
+        3 5 3 9  3 5 3 0                        35 39 43 47 51 55 59 
+3 5 3 9 3 5 3 17 3 5 3 9 3 5 3 0    67 71 75 79 83 87 91 95 99 103 107 111 115 119 123
 3 5 3 9
 
 --when it's 3, cycle len is 1 less than power of 2
@@ -154,8 +155,6 @@ same, but recording k from 2^k-some
             6 6 11 6 8 8 13 6 12 9 11 7 16 7 7                   6
 
 -}
-
---split proposition 1.13 into 2.
 
 11  --  1
 forward -> 3, 7

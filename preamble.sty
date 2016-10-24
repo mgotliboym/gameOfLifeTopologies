@@ -1,0 +1,57 @@
+\usepackage[pdftex]{graphicx}
+\usepackage{alltt}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{verbatim}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{xfrac}
+\setlist{parsep=0pt,listparindent=\parindent}
+\setlength{\RaggedRightParindent}{\parindent}
+\newcommand{\degree}{\ensuremath{^\circ}}
+\usepackage{accents}
+\let\thinbar\bar
+\newcommand\thickbar[1]{\accentset{\rule{.4em}{.8pt}}{#1}}
+\let\bar\thickbar
+\usepackage{standalone}
+%\usepackage{hyperref}
+\usepackage{venndiagram}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage[mathscr]{eucal}
+\usepackage{cleveref}
+
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\Q}{\ensuremath{\mathbb{Q}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\card}{\ensuremath{\operatorname{card }}}
+\newcommand{\Mod}[1]{\ensuremath{\;\;(\operatorname{mod}\;#1)}}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+\DeclarePairedDelimiter\angled{\langle}{\rangle}
+\newcommand\inv[1]{\ensuremath{{#1}^{-1}}}
+% \newcommand\arrowdef{\ensuremath{\stackrel{\mathclap{\normalfont\mbox{def}}}{\iff}}}
+\newcommand\arrowdef{\mathrel{\overset{\makebox[0pt]{\mbox{\normalfont\scriptsize\sffamily def}}}{\iff}}}
+
+\newcommand{\divides}{\bigm|} % http://tex.stackexchange.com/questions/117032/divides-not-divides-and-cardinalities
+\newcommand{\ndivides}{%
+  \mathrel{\mkern.5mu % small adjustment
+    % superimpose \nmid to \big|
+    \ooalign{\hidewidth$\big|$\hidewidth\cr$\nmid$\cr}%
+  }%
+}
+
+\crefname{prop}{proposition}{propositions}
+\crefname{cor}{corollary}{corollaries}
+\crefname{dfn}{definition}{definitions}
+
+\theoremstyle{plain}
+\newtheorem{prop}{Proposition}[section]
+\newtheorem{cor}{Corollary}[prop]
+\theoremstyle{definition}
+\newtheorem{dfn}[prop]{Definition}
+\newtheorem{innerProp}{Proposition}[prop]
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
