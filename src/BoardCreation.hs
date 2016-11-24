@@ -1,5 +1,9 @@
 module BoardCreation where
 
+--------------------------------------------------------------------
+-- board operations
+--------------------------------------------------------------------
+
 padBoardCenter :: Int -> Int -> [[Bool]] -> [[Bool]]
 padBoardCenter height width start =
   let (above,extraH) = (height - length start) `divMod` 2
@@ -26,6 +30,22 @@ orBoards = map (map (\(x,y) -> x || y)) `dot` (map $ \(a,b) -> zip a b) `dot` zi
 -}
 orBoards :: [[Bool]] -> [[Bool]] -> [[Bool]]
 orBoards = zipWith (zipWith (||))
+
+appendBoardsRight :: [[Bool]] -> [[Bool]] -> [[Bool]]
+appendBoardsRight = zipWith (++)
+
+repeatBoardRight :: [[Bool]] -> Int -> [[Bool]]
+repeatBoardRight board 1 = board
+repeatBoardRight _ n | n<=0 = undefined
+repeatBoardRight board n = appendBoardsRight board $ repeatBoardRight board $ n-1
+
+--------------------------------------------------------------------
+--Specific types of boards
+--------------------------------------------------------------------
+
+deadBoard :: Int -> Int -> [[Bool]]
+deadBoard height width =
+  replicate height $ replicate width False
 
 diagWallBoard :: Int -> [[Bool]]
 diagWallBoard n = map (\x -> replicate x False ++ True:replicate (n-1-x) False) [0,1..(n-1)]
@@ -60,10 +80,14 @@ horizWallBoardSquare n = horizWallBoard n n
 
 
 setCenterFalse :: [[Bool]] -> [[Bool]]
-setCenterFalse board =
+setCenterFalse board = --doesn't work for even boards
   let (as, (b:bs)) = splitAt (length board `div` 2) board
       (as', (_:bs')) = splitAt (length b `div` 2) b
     in as ++ (as' ++ (False:bs')):bs
+
+--------------------------------------------------------------------
+-- Specific boards
+--------------------------------------------------------------------
 
 glider :: [[Bool]]
 glider = [[False, True, False],[False, False, True],[True,True,True]]

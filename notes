@@ -4,13 +4,13 @@ Proven Propositions:
 2.1 - Furthermore, the seen clusters on boards of width 4k+2, 4k+3, and 4k+4 are [1,2,3], [1,3,6], and [1,3] respectively.
 3. A board of width 4k+3 after an even number of steps can be written as single 1s separated by segments of 0s with length 3 modulo 4, except at the edges
 where it is merely odd.
+4. Boards of width 2^n+1 have time to cycle 3/2*(n-1)-1; seen cluster sizes are 1,2,3,6
 
 Conjectures
 2. A board annihilates if and only if it is of width 2^n, 2^n-1, 2^n-2, or 2^n-2^{n-i}-1 for all i>=4 with n-i>=2 (i.e. first term in this pattern is 61=2^6-2^2-1, then 121, 125, (241, 249 conjectured), 253)
 2.1 - specifically, above n=6, 2^n-3 annihilates, with time to cycle of 2^n+15 = 2^n+2^4-1
 3. For every 2^n-1, there will be a board with that timetocycle
-4. Boards of width 2^n+1 have time to cycle 3/2*(n-1)-2; seen cluster sizes are 1,2,3,6
-5. The fuse lengths of 4k+3, starting at k=1 follow the below pattern, which continues (note new terms are successive powers of 2, plus 1).
+4. The fuse lengths of 4k+3, starting at k=1 follow the below pattern, which continues (note new terms are successive powers of 2, plus 1).
 Note: Center is at 2^k+2^{k-1}-1. ALSO: when this fuse length is 2^k+1, the cycle length will be 2^a-(2^k-1), for some a. The cycle length of the center term, fuse len 2^k+1, will be 2^{k+2}-(2^k-1)
 {- 
               0
@@ -22,8 +22,14 @@ Note: Center is at 2^k+2^{k-1}-1. ALSO: when this fuse length is 2^k+1, the cycl
 --when it's 3, cycle len is 1 less than power of 2
 --5: 3 less than power of 2
 -}
-6. A board of width 4k+3 creates a pattern of the form a0+1+b0+1+a0 every 2^k steps, until it reaches a point where 2a0 is 2^k-2 for some k, with 2a0>b0.
+5. A board of width 4k+3 creates a pattern of the form a0+1+b0+1+a0 every 2^k steps, until it reaches a point where 2a0 is 2^k-2 for some k, with 2a0>b0.
 
+-------------------------------------------------------------
+
+Boards 61, 125 create a block of 4 at the antipode upon first reaching the edge
+  Examining boards that start with a 4-cluster, we see that they have some repeating structure every 2^n, along with a major die off
+  In particular we get a pattern with 111 1 on the sides and some 1s with gaps spaced between
+    So we begin examining boards that start with 111 1
 
 -------------------------------------------------------------
 {-
@@ -147,14 +153,12 @@ corresponding time to cycle
               31  29  127  25 255  61  63                        33
 63 61 2047 57 255 253 8191 49 4095 509 2047 121 65535 125 127    65
 
-same, but recording k from 2^k-some
+same, but recording k from 2^k-(2^\alpha-1)
                             2                                   (2)
                             3                                    3
                           4 4 5                                  4
                      5 5  7 5 8  6 6                             5
             6 6 11 6 8 8 13 6 12 9 11 7 16 7 7                   6
-
--}
 
 11  --  1
 forward -> 3, 7
@@ -178,3 +182,33 @@ distance from left of singles can be 1, 3,
 
 board 47 --- 7
 51 --- not monotonic
+
+
+9|23|9  - takes 12 to meet middle
+|31|31|31| - 16 steps to close&become 1-cols (board 49)
+
+5|11|7|11|5 -  49
+  - 6 steps for the 11  -- lcm is 12
+  - 4 steps for the 7, this makes
+  1|7|3|15|3|7|1    53    --15 takes 8 steps, 
+  - 2 steps gets
+  3|3|7|11|7|3|3    55
+  (shrunk) | (generated gap from col) | (shrunk) | (new gap from the 7) | ...
+    - 4 steps       
+  3|3|11|3|11|3|3   59
+    - 2 steps
+  1|7|7|7|7|7|1
+    - 4 steps done
+
+4k+3 0s, 2 1s, so 4(k+1)+1 things. Need 4m+2 Rs, so sum is 4(k+m+1)+3 wide, which is 2m+1 on either side, i.e. odd.
+4k+3 0s, 2 1s, 2m+1 Rs on either side
+
+RRRRRR010000000000010RRRRRR
+RRRRRR111000000000111RRRRRR
+RRRRRR000100000001000RRRRRR
+
+
+[[20,20],[19,3,19],[18,1,18],[17,7,17],[16,5,16],[15,3,3,3,15],[14,1,1,1,14],[13,15,13],[12,13,12],[11,3,11,3,11],[10,1,9,1,10],[9,7,7,7,9],[8,5,5,5,8],[7,3,3,3,3,3,3,3,7],[6,1,1,1,1,1,1,1,6],[5,31,5],[4,29,4],[3,3,27,3,3],[2,1,25,1,2],[1,7,23,7,1],[5,21,5],[3,3,3,19,3,3,3],[2,1,1,17,1,1,2],[1,11,15,11,1],[9,13,9],[3,7,3,11,3,7,3],[2,5,1,9,1,5,2],[1,3,3,7,7,7,3,3,1],[1,1,5,5,5,1,1],[11,3,3,3,3,3,11],[10,1,1,1,1,1,10],[9,23,9],[8,21,8],[7,3,19,3,7],[6,1,17,1,6],[5,7,15,7,5],[4,5,13,5,4],[3,3,3,3,11,3,3,3,3],[2,1,1,1,9,1,1,1,2],[1,15,7,15,1],[13,5,13],[3,11,3,3,3,11,3],[2,9,1,1,1,9,2],[1,3,7,15,7,3,1],[1,5,13,5,1],[7,3,3,11,3,3,7],[6,1,1,9,1,1,6],[5,11,7,11,5],[4,9,5,9,4],[3,3,7,3,3,3,7,3,3],[2,1,5,1,1,1,5,1,2],[1,7,3,15,3,7,1],[5,1,13,1,5],[3,3,7,11,7,3,3],[2,1,5,9,5,1,2],[1,7,3,3,7,3,3,7,1],[5,1,1,5,1,1,5],[3,3,11,3,11,3,3],[2,1,9,1,9,1,2],[1,7,7,7,7,7,1],[5,5,5,5,5],[3,3,3,3,3,3,3,3,3,3,3],[2,1,1,1,1,1,1,1,1,1,2],[1,39,1],[37],[3,35,3],[2,33,2],[1,3,31,3,1],[1,29,1],[7,27,7],[6,25,6],[5,3,23,3,5],[4,1,21,1,4],[3,7,19,7,3],[2,5,17,5,2],[1,3,3,3,15,3,3,3,1],[1,1,1,13,1,1,1],[15,11,15],[14,9,14],[13,3,7,3,13],[12,1,5,1,12],[11,7,3,7,11],[10,5,1,5,10],[9,3,3,7,3,3,9],[8,1,1,5,1,1,8],[7,11,3,11,7],[6,9,1,9,6],[5,3,7,7,7,3,5],[4,1,5,5,5,1,4],[3,7,3,3,3,3,3,7,3],[2,5,1,1,1,1,1,5,2],[1,3,3,23,3,3,1],[1,1,21,1,1],[11,19,11],[10,17,10],[9,3,15,3,9],[8,1,13,1,8],[7,7,11,7,7],[6,5,9,5,6],[5,3,3,3,7,3,3,3,5],[4,1,1,1,5,1,1,1,4],[3,15,3,15,3],[2,13,1,13,2],[1,3,11,7,11,3,1],[1,9,5,9,1],[7,7,3,3,3,7,7],[6,5,1,1,1,5,6],[5,3,3,15,3,3,5],[4,1,1,13,1,1,4],[3,11,11,11,3],[2,9,9,9,2],[1,3,7,3,7,3,7,3,1],[1,5,1,5,1,5,1],[7,3,7,3,7,3,7],[6,1,5,1,5,1,6],[5,7,3,7,3,7,5],[4,5,1,5,1,5,4],[3,3,3,7,3,7,3,3,3],[2,1,1,5,1,5,1,1,2],[1,11,3,7,3,11,1],[9,1,5,1,9],[3,7,7,3,7,7,3],[2,5,5,1,5,5,2],[1,3,3,3,3,7,3,3,3,3,1],[1,1,1,1,5,1,1,1,1],[19,3,19]]
+
+
+63 61 2047 57 255 253 8191 49 4095 509 2047 121 65535 125 127

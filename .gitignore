@@ -10,3 +10,7 @@ dist/
 *.out
 *.log
 *.pdf
+*.gif
+outputGoL
+test
+*.txt
