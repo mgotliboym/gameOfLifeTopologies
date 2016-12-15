@@ -20,10 +20,12 @@
 \usepackage{bm}
 \usepackage[mathscr]{eucal}
 \usepackage{cleveref}
+\usepackage{tikz-cd}
 
 \newcommand{\R}{\ensuremath{\mathbb{R}}}
 \newcommand{\Q}{\ensuremath{\mathbb{Q}}}
 \newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
 \newcommand{\card}{\ensuremath{\operatorname{card }}}
 \newcommand{\Mod}[1]{\ensuremath{\;\;(\operatorname{mod}\;#1)}}
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
@@ -50,11 +52,23 @@
 \theoremstyle{plain}
 \newtheorem{prop}{Proposition}[section]
 \newtheorem{cor}{Corollary}[prop]
+\newtheorem{innerProp}{Proposition}[prop] %numbered like corollaries, but they are propositions
+
+\newtheorem{example}{Example}[section]
 \theoremstyle{definition}
 \newtheorem{dfn}[prop]{Definition}
-\newtheorem{innerProp}{Proposition}[prop]
 \theoremstyle{remark}
 \newtheorem*{remark}{Remark}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This Document Only
 \newcommand{\B}{\ensuremath{\mathbb{B}}}
-\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\G}{\ensuremath{\mathbb{G}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Set Theory
+\newcommand{\image}{\ensuremath{\operatorname{Im }}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -13,6 +13,8 @@ import Data.List
 import Data.Maybe
 import System.IO
 
+import Data.Bits
+
 import Class
 import InfPlane
 import Torus
@@ -57,7 +59,7 @@ main=mainProcessing
 
 mainProcessing :: IO ()
 mainProcessing = do --putStrLn $ show $ fst $ survivesOrAnnihilatesExtraInfo $ emptyExBoard  $ torusFromList $ vertWallBoard 5 2045
-  let results = map (\x -> (survivesOrAnnihilatesExtraInfo . emptyExBoard . torusFromList $ vertWallBoard 5 x, x) ) [7,11..147]--[253,249]--[4..2050] --257]
+  let results = map (\x -> (survivesOrAnnihilatesExtraInfo . emptyExBoard . torusFromList $ vertWallBoard 5 x, x) ) [7,9..147]--[253,249]--[4..2050] --257]
   putStrLn $ unlines $ map (show . \((a,_),c) -> (a,c) ) results
 {-main :: IO ()
 main = do
@@ -81,24 +83,18 @@ main = do
 -}
 
 runGame :: (PlaneZip p z1 z2) => Int -> p z1 z2 Bool -> IO ()
-runGame speed board = mainSpace 0 speed board
+runGame speed board = mainSpace (\x -> putStrLn $ show x) 0 speed board
 
 mainNoSpace :: (PlaneZip p z1 z2) => Int -> Int -> p z1 z2 Bool -> IO ()
 mainNoSpace n speed board = do
-  --clearScreen
-  --putStrLn $ show n
+  mainSpace (\_ -> return ()) n speed board
+
+mainSpace :: (PlaneZip p z1 z2) => (Int -> IO ()) -> Int -> Int -> p z1 z2 Bool  -> IO ()
+mainSpace ioAct n speed board = do
+  ioAct n
   putStr $ showGame board
   threadDelay speed 
-  mainNoSpace (n+1) speed $ extend gameOfLifeRule board
-
-mainSpace :: (PlaneZip p z1 z2) => Int -> Int -> p z1 z2 Bool -> IO ()
-mainSpace n speed board = do
-  --clearScreen
-  putStrLn $ show n
-  putStrLn $ showGame board
-  threadDelay speed 
-  mainSpace (n+1) speed $ extend gameOfLifeRule board
-
+  mainSpace ioAct (n+1) speed $ extend gameOfLifeRule board
 mainFileOutput :: forall p z1 z2. (PlaneZip p z1 z2) => p z1 z2 Bool -> IO ()
 mainFileOutput board = withFile "octave/outputGoL" WriteMode (f' board) --AppendMode
   where
@@ -116,6 +112,7 @@ data ExtraStats = ExtraStats {
   aliveClusters :: Int, --assumes vert wall board on a torus/klein
   maxAliveClusters :: Int, --assumes vert wall board on a torus/klein
   timeToCycle :: Int, --starts at 0, the timeToCycle-th generation is the first repeated one
+  cycleLength :: Int, --not necessary to store, timeToCycle-fuseLength
   survivedAnnihilated :: BoardResult,
   fuseLength :: Int, --starts at 0, the fuseLength-th generation is the one which is repeated after timeToCycle-th generations.
   --After the fuseLength-th generation, there will be (timetoCycle-fuseLength) unique generations in every cycle
@@ -128,7 +125,8 @@ type ExBoard p = (ExtraStats, p Bool)
 emptyExBoard :: p Bool -> ExBoard p
 emptyExBoard board = (ExtraStats{aliveColumns=0,maxAliveColumns=0,
                                  aliveClusters=0,maxAliveClusters=0,
-                                 timeToCycle=0,survivedAnnihilated=Survived,
+                                 timeToCycle=0,cycleLength=0,
+                                 survivedAnnihilated=Survived,
                                  fuseLength=0,seenClusterSizes=[],allClusterNums=[],
                                  allGapSizes=[]}, board)
 
@@ -188,7 +186,7 @@ survivesOrAnnihilatesExtraInfo exboard@(_, board) =
                 --{( allClusterNums=reverse (allClusterNums dat'), allGapSizes=reverse $ allGapSizes dat'},nextBoard)
                 allClusterNums=[], allGapSizes=[]},nextBoard)
           else if boolBoard `elem` boardsSoFar then
-            (dat'{survivedAnnihilated=Survived, timeToCycle=length boardsSoFar,
+            (dat'{survivedAnnihilated=Survived, timeToCycle=length boardsSoFar, cycleLength=(fromJust $ elemIndex boolBoard boardsSoFar) + 1,
                  fuseLength=length boardsSoFar - (fromJust $ elemIndex boolBoard boardsSoFar) - 1,
                  seenClusterSizes=sort $ seenClusterSizes dat', --{ },( nextBoard)
                  --{( allClusterNums=reverse (allClusterNums dat'), allGapSizes=reverse $ allGapSizes dat'},nextBoard)
@@ -210,7 +208,60 @@ survivesOrAnnihilatesExtraInfoTest exboard@(_, board) =
         else full `seq` f $ updateBoard full      
   in f exboard
 
-data Interval a = Interval a a deriving (Show, Eq)--closed interval
+elementaryRuleN :: (PlaneZip p z1 z2) => Int -> p z1 z2 Bool -> Bool
+elementaryRuleN n p =
+  let neighbors = head $ getTrueSquare p
+      --neighborsNum = foldl ((+) . (*10)) 0 (map fromEnum neighbors)
+    in case neighbors of
+      [True, True, True] -> (n .&. 128) /= 0
+      [True, True, False] -> (n .&. 64) /= 0
+      [True, False, True] -> (n .&. 32) /= 0
+      [True, False, False] -> (n .&. 16) /= 0
+      [False, True, True] -> (n .&. 8) /= 0
+      [False, True, False] -> (n .&. 4) /= 0
+      [False, False, True] -> (n .&. 2) /= 0
+      [False, False, False] -> (n .&. 1) /= 0
+      _ -> False
+  
+
+elementaryRule110 :: (PlaneZip p z1 z2) => p z1 z2 Bool -> Bool
+elementaryRule110 p =
+  let neighbors = head $ getTrueSquare p
+   in case neighbors of
+    [True,True,False] -> True
+    [True,False,True] -> True
+    [False,True,True] -> True
+    [False,True,False] -> True
+    [False,False,True] -> True
+    _ -> False
+
+runRule :: (PlaneZip p z1 z2) => ((p z1 z2 Bool) -> Bool) -> Int -> p z1 z2 Bool -> IO ()
+runRule rule speed board = do
+  putStr $ showGame board
+  threadDelay speed
+  runRule rule speed $ extend rule board
+
+example1 :: IO ()
+example1 =
+  mainSpace (\x -> clearScreen >> (putStrLn $ show x)) 0 100000 $ kleinFromList $ padBoardCenter 10 11 glider
+example2 :: IO ()
+example2 =
+  mainSpace (\x -> clearScreen >> (putStrLn $ show x)) 0 100000 $ torusFromList $ diagWallBoard 32
+example3 :: IO ()
+example3 =
+  mainSpace (\x -> clearScreen >> (putStrLn $ show x)) 0 150000 $ kleinFromList $ diagWallBoard 32
+example4 :: IO ()
+example4 =
+  mainNoSpace 0 150000 $ torusFromList $ vertWallBoard 1 63
+example23 :: IO ()
+example23 =
+  mainSpace (\x -> putStrLn $ show x) 0 150000 $ kleinFromList $ vertWallBoard 4 23
+example241 :: IO ()
+example241 =
+  mainNoSpace 0 70000 $ torusFromList $ vertWallBoard 1 241
+
+
+--data Interval a = Interval a a deriving (Show, Eq)--closed interval
 
 {-getNumComponents :: PlaneZip p z1 z2 => ExBoard (p z1 z2) -> ExBoard (p z1 z2)
 getNumComponents (dat,board) =

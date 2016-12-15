@@ -1,3 +1,9 @@
+TODO REFORMULATIONS:
+board homo/iso-morphisms
+board segments
+speed of light separation
+
+
 Proven Propositions:
 1. A board of width 2^n-1 annihilates in 2^{n-1} steps
 2. The time to cycle of a board with width n=4k+3 is t and the fuse length is f, then the time to cycle for boards of width 4k+2 and 4k+4 is also t, and the fuse length is also f. t and f are even numbers of steps.

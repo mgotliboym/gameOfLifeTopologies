@@ -5,6 +5,7 @@
 
 \section{Introduction}
 We define some basic terminology related to Conway's Game of Life played on a torus, with a vertical wall as the starting configuration. We assume boards are of height $k\geq 5$, and specify the width, which may also be referred to as the size. Any given numeric variable is a natural, $\N=\Z_{\geq 0}$, unless specified otherwise.
+\subsection{Definitions}
 \begin{dfn}
   A board is a rectangular grid of cells, which are dead or alive. The opposite edges of the grid are connected to form a torus. When each column of a grid consists of cells which are either all alive or all dead, we represent the whole grid by a sequence of 0s and 1s, with 1 representing a column of living cells. Let $\mathbb{B}_w$ be the set of all boards of width $w$, with columns which consist of either all living cells or all dead cells. We allow any height, as mentioned above. Let $C:\mathbb{B}_w\rightarrow \mathbb{B}_w$ map the board to what it is after one application of the rule of Conway's Game of Life to it, and let $C^n$ represent $n$ compositions of $C$, that is, $C^n=\underbrace{C\circ C\circ\cdots \circ C}_{n \text{ times}}$. 
 \end{dfn}
@@ -21,10 +22,13 @@ We define some basic terminology related to Conway's Game of Life played on a to
   We define a map, $G_w: \N\rightarrow \B_w$ as follows. For all $2k+1$, $G_{2k+1}(0) = k\cdot 0 \oplus 1 \oplus k\cdot 0$. For all $2k$, $G_{2k}(0) = k-1\cdot 0 \oplus 1 \oplus k\cdot 0$. Then for all $w$, $G_w(s)$ is $s$ applications of $C$ to $G_w(0)$, it is $C^s(G_w(0))$. We say that the $1$ on the board $G_w(0)$ is at the center of the board.
 \end{dfn}
 \begin{dfn} \label{BoardEvolution}
-  A {\bf board evolution} is a function $G:\N \rightarrow \B_w$, for some $w$, such that for all $n>0$, $G(n)=C^n(G(0))$. $G_w$ is an example of a board evolution. Clearly, a board evolution $G$ is defined uniquely by $G(0)$. 
+  A {\bf board evolution} is a function $G:\N \rightarrow \B_w$ for some $w$, such that for all $n>0$, $G(n)=C^n(G(0))$. $G_w$ is an example of a board evolution. Clearly, a board evolution $G$ is defined uniquely by $G(0)$.
 \end{dfn}
+
+The focus of this paper will be on these board evolutions $G_w$. They start simply, and are useful in examining other board evolutions as well, as we will see.
+
 \begin{dfn}\label{cycles}
-  For any board evolution $G$, the {\bf time to cycle} of a board evolution, $tc(G)$, is the minimum $s$ such that there exists a $t<s$ with $G(s)=G(t)$. The {\bf fuse length}, $fuse(G)$ is $t$. Sometimes we also call the board $G(t)$ the fuse or the fuse board. 
+  For any board evolution $G$, the {\bf time to cycle} of a board evolution, $tc(G)$, is the minimum $s$ such that there exists a $t<s$ with $G(s)=G(t)$. The {\bf fuse length}, $fuse(G)$ is $t$. Sometimes we also call the board $G(t)$ the fuse or the fuse board. Finally, the {\bf cycle length} of a board evolution, $cl(G)$, is simply $tc(G)-fuse(G)$.
 \end{dfn}
 \begin{dfn}\label{cluster}
   A {\bf cluster} of size $n$ is a largest possible contiguous segment of 1s, of length $n$,  that is, $0\oplus n\cdot 1\oplus 0$ is a cluster of size $n$. A board contains a cluster of size $n$ if it can be written $A\oplus n\cdot 1\oplus B$, where either $A$ is empty, or $A=A'\oplus 0$ and either $B$ is empty or $B=0\oplus B'$. We often mention clusters in the context of the seen clusters of a board with width $w$ --- the set of all $n$ such that a cluster of length $n$ exists in $G_w(s)$ for some $s$. 
@@ -33,10 +37,11 @@ We define some basic terminology related to Conway's Game of Life played on a to
   A {\bf (right) rotation} of a board is defined as would be expected, it is an operation $\curvearrowright: \B_w\times \N\rightarrow \B_w$ and is formally defined $$x_1x_2x_3\dots x_m\curvearrowright n = x_{m-n+1}x_{m-n+2}\dots x_{m-1}x_mx_1x_2\dots x_{m-n}$$ where each $x_i$ represents a living or dead cell, for $0\leq n<m$, all appended together. For $n\geq m$, take the representative between $0$ and $m-1$ of the equivalence class $n\Mod m$. The left rotation is defined similarly.
 \end{dfn} %which is a group action of Z_w on the board
 \begin{dfn}\label{annihilation}
-  A board $B$ or a board evolution $G$ {\bf annihilates} in $s$ steps if $s$ is the minimum number of steps such that $s$ applications of the game of life rule to $B$ yields a board where all the cells are dead, that is, $G(s)$ is a board with all dead cells. We also say a board is annihilited if it contains all dead cells.
+  A board $B$ or a board evolution $G$ {\bf annihilates} in $s$ steps if $s$ is the minimum number of steps such that $s$ applications of the game of life rule to $B$ yields a board where all the cells are dead, that is, $G(s)$ is a board with all dead cells. We also say a board is annihilated if it contains all dead cells.
 \end{dfn}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{General Tools}
 
 We proceed to prove some basic propositions which will be fairly universal. We start by showing that any odd board in the board evolution $G_w$ is symmetrical.
 \begin{prop}[Symmetry]\label{symmetry}
@@ -53,11 +58,11 @@ We proceed to prove some basic propositions which will be fairly universal. We s
 %  This is immediately clear. After a single step, we will have $a-1$ zeros, a 1, and then unknown material until the symmetric portion, simply by the game of life rules. Applying this iteratively gets the result. We do not proceed further, we're out of 0s to proceed into, the 1s have met at edges.
 %\end{proof}
 
-Boards whose width is a power of 2, or one less than a power of 2, are frequently very important, since any single column can be modelled as one of these boards for several steps. We begin by showing that a board of size $2^n-1$ annihilates in $2^{n-1}$ steps, for integers $n\geq 3$.
+Boards whose width is a power of 2, or one less than a power of 2, are frequently very important, since any single column can be modeled as one of these boards for several steps. We begin by showing that a board of size $2^n-1$ annihilates in $2^{n-1}$ steps, for integers $n\geq 3$.
 
 \begin{prop}\label{Power2} % About boards of width 2^n-1
-  Let $w(n)=2^n-1$, to generate the width of the board, and $s(n)=2^{n-1}$ to generate the number of steps for the board to annihilate. Then:\\
-  \vspace*{-1.3em}
+  Let $w(n)=2^n-1$, to generate the width of the board, and $s(n)=2^{n-1}$ to generate the number of steps for the board to annihilate. Then:%\\
+  %\vspace*{-1.3em}
   \begin{enumerate}[label=(\alph*)]
     \item\label{a} The board $G_{w(n)}(s(n-1))$ will be exactly $G_{w(n-1)}(0)\oplus 1\oplus G_{w(n-1)}(0)$.
     \item\label{b} The board $G_{w(n)}(s(n)-1)$ will be alive at the `edges', in clusters of 3: $111\oplus B\oplus 111$, for some sequence of cells $B$. 
@@ -67,7 +72,7 @@ Boards whose width is a power of 2, or one less than a power of 2, are frequentl
   \end{enumerate}
 \end{prop}
 \begin{proof}
-We have as a base case that it annihilates on size 3 in 2 steps, the states prior to annihilation are 010 and 111. On 7 it annihiliates in 4 steps. On a board of size 7, the second generation, 0011100 lives to create a new state, which could be modeled as two adjacent boards of size 3 in the start state with a gap of one between them: 0100010. The final state non-annihilated is then 1110111.
+We have as a base case that it annihilates on size 3 in 2 steps, the states prior to annihilation are 010 and 111. On 7 it annihilates in 4 steps. On a board of size 7, the second generation, 0011100 lives to create a new state, which could be modeled as two adjacent boards of size 3 in the start state with a gap of one between them: 0100010. The final state non-annihilated is then 1110111.
 
 We assume the hypothesis up to some $n$, proceeding by strong induction, and prove it for $n+1$
 
@@ -89,7 +94,7 @@ By part~\ref{d}, these two boards $G_{w(n)}(0)$ will advance through $s(n)-1$ st
 
 We generalize this corollary to any annihilating board.
 \begin{prop}\label{PostAnnihilation}
-  Suppose $B_w$ is a board evolution of some starting state $B$ (so $B_w(0)=B$) which annihilates in $s$ steps. Furthermore, suppose that $B_w(s-1)$ is alive by the antipode, that is $B_w(s-1)=1\oplus A\oplus 1$. Let $W\geq w+2$. We define a board evolution in two cases. Write $W=w+k$, then if $k=2a$ is even we define $B_W(0)=a\cdot 0 \oplus B\oplus a\cdot 0$, and if $k=2a+1$ is odd we define $B_w(0)=a\cdot 0\oplus B\oplus a+1\cdot 0$. \\
+  Suppose $B_w$ is a board evolution of some starting state $B$ (so $B_w(0)=B$) which annihilates in $s$ steps. Furthermore, suppose that $B_w(s-1)$ is alive by the edges, that is $B_w(s-1)=1\oplus A\oplus 1$. Let $W\geq w+2$. We define a board evolution in two cases. Write $W=w+k$, then if $k=2a$ is even we define $B_W(0)=a\cdot 0 \oplus B\oplus a\cdot 0$, and if $k=2a+1$ is odd we define $B_w(0)=a\cdot 0\oplus B\oplus a+1\cdot 0$. \\
   Then, $B_W(s)=a-1\cdot 0\oplus 1\oplus w\cdot 0\oplus 1\oplus a-1\cdot 0\oplus \alpha\cdot 0$, where $\alpha$ is 0 if $k$ is even and odd otherwise.
 \end{prop}
 \begin{proof}
@@ -107,6 +112,11 @@ We generalize this corollary to any annihilating board.
   We proceed by induction, this is true for simple base cases $W=3,4,5$. Consider odd $W=2k+1$, and suppose the hypothesis is true up to $k$; we prove it for $k+1$, $W=2k+3$. Then note the board $G_{2k+3}(k)=0\oplus G_{2k+1}(k)\oplus 0$, and in particular $G_{2k+3}(k)=01\oplus A\oplus 10$. The next generation is clearly the same even if the board were widened with any number of 0s padded on any side, and will have 1s at its edges. \\
   In particular, if we add one 0 on the right, we see that the hypothesis holds for even boards.
 \end{proof}
+
+In fact we can generalize this further, to a general time for interaction to be possible.
+\begin{cor}[Light-speed]\label{lightspeed}
+  Let $G:\N\rightarrow \B_w$ be a board evolution, and let $G(s)=B$. For some $2n<w$, let $B=0\cdot n\oplus C_0 \oplus 0\cdot n$, where $C_0\in \B_{w-2n}$ has 1s on both edges. Then $G(s+i)$ for $0\leq i\leq n$ is $0\cdot (n-i)\oplus C_i\oplus (n-i)\cdot 0$, again with $C_i$ having 1s on both edges, for all $i$.
+\end{cor}
 
 \begin{dfn}\label{EvenlySpaced}
   We say a board is {\bf evenly spaced} if it consists of $n$ single living columns separated by $n$ gaps of equal length, that is, if the board is of the form $(1\oplus k\cdot 0)\cdot n$ rotated by any amount:
@@ -135,6 +145,7 @@ We generalize this corollary to any annihilating board.
 \section{Boards of Width Three Modulo Four}
 We begin examining boards of width $4k+3$. These evidently have a much more regular behavior than boards of width $4k+1$. 
 We seek to prove that for boards of width $4k+2, 4k+3, 4k+4$, the survival, time to cycle, and fuse length will be equal. To do this, we will need some more development. In particular, we need some more information about the evolution of boards with width 3 modulo 4.
+\subsection{Identifying Even Board Widths}
 
 \begin{prop}\label{onesSepByOddZeros} %boards 4k+3 are 1s sep by odd (3 mod 4) segments of 0s
   Boards of width $w=4k+3$ after an even number of steps can always be written as single 1s separated by segments of 0s with length 3 modulo 4, except at the edges where it is merely odd. That is, in the following format:
@@ -180,15 +191,15 @@ We seek to prove that for boards of width $4k+2, 4k+3, 4k+4$, the survival, time
   Boards of width $w=4k+3$ will produce exactly clusters of sizes $1,3,6$ at some point in their life cycles, starting with $k=1$. No other cluster sizes will be produced.
 \end{prop}
 \begin{proof}
-  Clearly from $G_w(0)$ and $G_w(1)$ we get clusters of size $1,3$. We will get a cluster of size $6$ at $G_w(2k+1)$, which by~\cref{OddBoardFirstEdge} is the first time the board reaches an `edge.' We prove this by induction; it is true for base case $k=1$. Suppose it holds for $k$, we show it holds for $k+1$. $G_{4k+7}(2k+1) = 00\oplus G_{4k+3}(2k+1)00 = 00111\oplus A\oplus 11100$ by the induction hypothesis. Then $G_{4k+7}(2k+2)=01000\oplus B\oplus 00010$ and $G_{4k+7}(2k+3)=1110\oplus C\oplus 0111$. This is exactly a cluster of 6, at the correct time. The other direction holds by~\cref{cluster3mod4cor}.
+  Clearly from $G_w(0)$ and $G_w(1)$ we get clusters of size $1,3$. We will get a cluster of size $6$ at $G_w(2k+1)$, which by~\cref{lightspeed} is the first time the board reaches an `edge.' We prove this by induction; it is true for base case $k=1$. Suppose it holds for $k$, we show it holds for $k+1$. $G_{4k+7}(2k+1) = 00\oplus G_{4k+3}(2k+1)00 = 00111\oplus A\oplus 11100$ by the induction hypothesis. Then $G_{4k+7}(2k+2)=01000\oplus B\oplus 00010$ and $G_{4k+7}(2k+3)=1110\oplus C\oplus 0111$. This is exactly a cluster of 6, at the correct time. The other direction holds by~\cref{cluster3mod4cor}.
 \end{proof}
 
 \addtocounter{prop}{1}
-\begin{innerProp}
+\begin{innerProp}\label{2mod4everyotherwith0}
   $0\oplus G_{4k+2}(2s)=G_{4k+3}(2s)$, for all $s$.
 \end{innerProp}
 \begin{proof}
-  We have by~\cref{onesSepByOddZeros} that $G_{4k+3}(2s)$ is of the form $b\cdot 0 \oplus (1 \oplus a_1\cdot 0 \oplus 1\oplus a_2\cdot 0\oplus\cdots \oplus 1\oplus a_n\cdot 0) \oplus 1 \oplus b$ where each $a_i\equiv 3 \Mod{4}$, and $b$ is odd. \\
+  We have {{{ by~\cref{onesSepByOddZeros} }}} that $G_{4k+3}(2s)$ is of the form $b\cdot 0 \oplus (1 \oplus a_1\cdot 0 \oplus 1\oplus a_2\cdot 0\oplus\cdots \oplus 1\oplus a_n\cdot 0) \oplus 1 \oplus b$ where each $a_i\equiv 3 \Mod{4}$, and $b$ is odd. \\
   We proceed by induction. Suppose that for each even step $2s$, we have $G_{4k+3}(2s)=0\oplus G_{4k+2}(2s)$. The base case of $s=0$ is clear. \\
   Suppose at step $2s$ the board $G_{4k+3}(2s)$ is not near an edge, that is, $b>1$. Then the induction hypothesis clearly holds for $2s+2$. \\
   Suppose $G_{4k+3}(2s)=01\oplus A\oplus 10$ is near the `edge', that is, in the above format $b=1$. Then we have the following situation:
@@ -205,7 +216,7 @@ We seek to prove that for boards of width $4k+2, 4k+3, 4k+4$, the survival, time
   \end{align*}
   %\vspace*{-1cm}
 \end{proof}
-\begin{innerProp}
+\begin{innerProp}\label{3mod4With0is4mod4}
   $G_{4k+3}(s)\oplus 0=G_{4k+4}(s)$, for all $s$.
 \end{innerProp}
 \begin{proof}
@@ -232,7 +243,10 @@ We seek to prove that for boards of width $4k+2, 4k+3, 4k+4$, the survival, time
   The annihilation or survival follows from the associated proposition and~\cref{3mod4annihilateOnEven}. The fuse length and time to cycle follows~\cref{cycleOnEven3mod4}. The clusters are visible in the above proposition.
 \end{proof}
 
-We have been using the notion of the `edges' of the board without defining it, it has been based simply on the intuition of a torus seen as a rectangle with connected edges. However, the torus itself does not have true edges, so in what sense does it make sense to talk about them? We seed the board with an initial living `wall'. This `wall' we say is at the center of the torus, arbitrarily. The results would be the same if it were in any other location, though the 2-d display might look different. We call the opposite point on the torus the antipode, it is roughly what we previously called the `edges'. There is a minor issue --- there might not be an exact antipode, since we have a discrete quantity of cells. On an odd-width board, there is an odd amount of zeros on either side of the center, and so no single cell can be the antipode --- we call the two cells farthest from the center the antipodes. We will see that this is a reasonable definition.
+\subsection{Antipodes, and some specific 3-modulo-4 boards}
+We have a full identification of boards of even width with boards of widths 3 modulo 4. In the following discussion, we use both this notion, and some others that have come up in the course of finding this identification. We will examine the time to cycle and fuse lengths of certain boards whose width are 3 modulo 4.
+
+We have been using the notion of the `edges' of the board without defining it, it has been based simply on the intuition of a torus seen as a rectangle with connected edges. However, the torus itself does not have true edges, so in what sense does it make sense to talk about them? We seed the board with an initial living `wall'. This `wall' we say is at the center of the torus, arbitrarily. The results would be the same if it were in any other location, though the 2-d display might look different. We call the opposite point on the torus the {\bf antipode}, it is roughly what we previously called the `edges'. There is a minor issue --- there might not be an exact antipode, since we have a discrete quantity of cells. On an odd-width board, there is an odd amount of zeros on either side of the center, and so no single cell can be the antipode --- we call the two cells farthest from the center the antipodes. We will see that this is a reasonable definition.
 
 Since the center is chosen arbitrarily, we can at any moment `refocus' and look at the board with a new center, a useful strategy. 
 \begin{prop}\label{SymmetricAntipode}
@@ -247,8 +261,10 @@ Since the center is chosen arbitrarily, we can at any moment `refocus' and look 
   This is evident by~\cref{4mod4like3mod4} and~\cref{2mod4Characterization}. 
 \end{proof}
 %\begin{cor}\label{Boards1001LikeRegular}
-%  The above corollary implies that for boards of width $w=4k+3$, a board that is all dead except for $1001$ at the center behaves just like one with $10001$ at the center; it simply consistently has one %less 0.
+%  For boards of width $w=4k+3$, for $\alpha>1$, a board of the form $B=a\cdot 0 \oplus 1\oplus 2^{\alpha}-2\cdot 0\oplus 1\oplus a+1\cdot 0$ at the center behaves just like one with $1\oplus 2^{k}-1\cdot 0 1$ at the center; it simply consistently has one less 0.
 %\end{cor}
+%\begin{proof}
+%  Rotate $B$ left by $2k+1$ to get $2^{\alpha-1}-1\cdot 0 1\oplus w-2^\alpha\cdot 0 \oplus 1\oplus 2^{\alpha-1}-1$. Since we are on a torus, rotation will not change the evolution of The equivalent board of width $w=4k+4$ will behave in exactly the same way by~\cref{3mod4With0is4mod4}, we simply append a 0 to the right. 
 
 %\begin{cor}
 %  Let $w$ be a width such that $w\equiv 2,3,4 \Mod 4$. Suppose the board reaches a state as %described in the associated proposition, at step $s$, with $t$ the value such that %$G_w(t)=G_w(2s-t)$. Then $fuse(G_w)\leq t$. 
@@ -278,18 +294,20 @@ Generalizing, we get the following.
 
 We have examined boards of the form $2^k+2^\alpha$, now we switch to boards of form $2^k-2^\alpha$. 
 
-\begin{comment}\begin{prop}
+\begin{comment}
+\begin{prop}
   Boards of size $w=2^n-5$ have $tc(G_w)=2^n-2$ and $fuse(G_w)=2$.
 \end{prop}
 \begin{proof} %2^n-5 - 2 - 2^{n-1}+1 = 2^{n-1} - 6  / 2 -> 2^{n-2} -3
-  Consider the board after $2^{n-2}$ steps, by~\cref{Power2} we have that $G_w(2^{n-2})=2^{n-2}-3\cdot 0\oplus 1\oplus 2^{n-1}-1\cdot 0 \oplus 1\oplus 2^{n-2}-3\cdot 0$. By the same proposition and~\cref{OddBoardFirstEdge}, it will advance through the next $2^{n-2}-3$ steps without interacting with the edges. By the same logic as used in the proof of~\cref{Power2}, we conclude that $G_w(2^{n-1}-4) = 0\oplus 1\oplus 7\cdot 0\oplus 1\oplus 7 \cdot 0\oplus\cdots\oplus 1\oplus 7\cdot 0\oplus 1\oplus 0$, with enough repetitions to fill the board, that is, $((2^n-5)-3)/8 = (2^n-8)/8=2^{n-3}-1$ repititions. Then in two steps we get $000\oplus 1\oplus 000\oplus 1\oplus\cdots\oplus 000\oplus 1\oplus 000$, with $2^{n-2}-2$ 1s. And finally in two more steps this becomes $01\oplus 2^n-9\cdot 0 \oplus 10=G_w(2^{n-1})$. By~\cref{SymmetricAntipodeAll} we get the desired result. 
-\end{proof} \end{comment}
-\begin{prop}
+  Consider the board after $2^{n-2}$ steps, by~\cref{Power2} we have that $G_w(2^{n-2})=2^{n-2}-3\cdot 0\oplus 1\oplus 2^{n-1}-1\cdot 0 \oplus 1\oplus 2^{n-2}-3\cdot 0$. By the same proposition and~\cref{lightspeed}, it will advance through the next $2^{n-2}-3$ steps without interacting with the edges. By the same logic as used in the proof of~\cref{Power2}, we conclude that $G_w(2^{n-1}-4) = 0\oplus 1\oplus 7\cdot 0\oplus 1\oplus 7 \cdot 0\oplus\cdots\oplus 1\oplus 7\cdot 0\oplus 1\oplus 0$, with enough repetitions to fill the board, that is, $((2^n-5)-3)/8 = (2^n-8)/8=2^{n-3}-1$ repetitions. Then in two steps we get $000\oplus 1\oplus 000\oplus 1\oplus\cdots\oplus 000\oplus 1\oplus 000$, with $2^{n-2}-2$ 1s. And finally in two more steps this becomes $01\oplus 2^n-9\cdot 0 \oplus 10=G_w(2^{n-1})$. By~\cref{SymmetricAntipodeAll} we get the desired result. 
+\end{proof}
+\end{comment}
+\begin{prop}\label{Pow2MinusPow2}
   Boards of size $w=2^k-2^\alpha-1$ have $fuse(G_w)=2^{\alpha-1}$ and $tc(G_w)=2^k-2^{\alpha-1}$, for $2 \leq \alpha \leq k-3$, $k\geq 5$. 
 \end{prop}
 \begin{proof} %2^n-2^\alpha-1 - 2 - 2^{n-1}+1 = 2^{n-1} - 2^\alpha - 2  / 2 -> 2^{n-2} - 2^{\alpha-1} - 1
   %Examples of size 55, 59 are useful
-  Consider the board after $2^{k-2}$ steps, by~\cref{Power2} we have $G_w(2^{k-2})=2^{k-2}-2^{\alpha-1}-1\cdot 0\oplus 1\oplus 2^{k-1}-1\cdot 0 \oplus 1\oplus 2^{k-2}-2^{\alpha-1}-1\cdot 0$. By~\cref{OddBoardFirstEdge} it will take $2^{k-2}-2^{\alpha-1}-1$ steps to reach the edge, so for this amount of time we can follow the format of boards of size $2^n-1$ as in~\cref{Power2}. That is, we have behavior akin to two boards of width $2^{k-2}+3$ for the next $2^{k-3}$ steps. At this point, we will have the board $G_W(2^{k-2}+2^{k-3}) = 2^{k-3}-2^{\alpha-1}-1\cdot 0 \oplus 1\oplus 2^{k-2}\cdot 0\oplus 1\oplus 2^{k-2}\cdot 0\oplus 1\oplus 2^{k-2}\cdot 0\oplus 1\oplus 2^{k-3}-2^{\alpha-1}-1\cdot 0$. Note that $2^{k-3}>2^{\alpha-1}+1$, since $\alpha$ is at most $k-3$, so this does in fact reach this point without reaching the edges.
+  Consider the board after $2^{k-2}$ steps, by~\cref{Power2} we have $G_w(2^{k-2})=2^{k-2}-2^{\alpha-1}-1\cdot 0\oplus 1\oplus 2^{k-1}-1\cdot 0 \oplus 1\oplus 2^{k-2}-2^{\alpha-1}-1\cdot 0$. By~\cref{lightspeed} it will take $2^{k-2}-2^{\alpha-1}-1$ steps to reach the edge, so for this amount of time we can follow the format of boards of size $2^n-1$ as in~\cref{Power2}. That is, we have behavior akin to two boards of width $2^{k-2}+3$ for the next $2^{k-3}$ steps. At this point, we will have the board $G_W(2^{k-2}+2^{k-3}) = 2^{k-3}-2^{\alpha-1}-1\cdot 0 \oplus 1\oplus 2^{k-2}\cdot 0\oplus 1\oplus 2^{k-2}\cdot 0\oplus 1\oplus 2^{k-2}\cdot 0\oplus 1\oplus 2^{k-3}-2^{\alpha-1}-1\cdot 0$. Note that $2^{k-3}>2^{\alpha-1}+1$, since $\alpha$ is at most $k-3$, so this does in fact reach this point without reaching the edges.
   
   % For the next $2^{k-3}-2^{\alpha-1}$ steps we can treat each of these 1s as an independent board.
   A board of size $2^k-1$ will annihilate in $2^{k-1}$ steps. We are approaching that point, if we look at when our board reaches the edge, after a further $2^{k-3}-2^{\alpha-1}-1$ steps, we see that this is $G_w(2^{k-1}-2^{\alpha-1}-1)$, we are $(2^{\alpha-1}+1)$ steps away from that point. By~\cref{Pow2BelowPow2EvenSpacing} and the way we arrived at it, it is clear that $G_w(2^{k-1}-2^{\alpha-1})$ is an evenly spaced board padded with extra zeros, $G_w(2^{k-1}-2^{\alpha-1})=(2^\alpha-1\cdot 0\oplus 1\oplus2^\alpha-1\cdot 0\oplus 1\oplus\cdots\oplus2^\alpha-1\cdot 0\oplus 1)\oplus 2^\alpha-1\cdot 0$. 
@@ -330,22 +348,22 @@ We develop a proposition similar to~\cref{Power2}.
 \end{prop}
 \begin{proof}
   We take $w(0)$ a base case, $H_{w(0)}(0)=01010$ and $H_{w(0)}(1)=11011$, the next step is annihilation. Assume the hypothesis for values up to $n$, and prove it for $n+1$. \\
-  By~\cref{PostAnnihilation} and the induction hypothesis, $H_{w(k+1)}(s(k))=4*2^k-1\cdot 0 \oplus 1\oplus w(k)\cdot 0 \oplus 1 \oplus 4*2^k-1$. Since $5+8*2^k-1 = 2^{k+3}-3$ we can re-write this as $2^{k+2}-1\cdot 0 \oplus 1\oplus (2^{k+2}-1)*2-1\cdot 0\oplus 1\oplus 2^{k+2}-1\cdot 0$. That is, we have what is very nearly $G_{2^{k+3}-1}(0)\oplus G_{2^{k+3}-1}(0)$, with one fewer 0 in the center. They each evolve without interacting for $2^{k+2}-2$ steps by~\cref{OddBoardFirstEdge}. We have a precise description of the board at this point by~\cref{Pow2BelowPow2EvenSpacing}, it consists of evenly spaced $1$s with a gap size of $3$. $H_{w(k+1)}(s(k)+2^{k+2}-2)=(0100)\cdot 2^{k+1}-1\oplus 01010 \oplus (0010)\cdot 2^{k+1}-1$. By applying the game of life rule, we get a board with $111$s on the edges, and by applying it again we get annihilation. Note that $s(k)+2^{k+2} = 2^{k+2}-2+2^{k+2}=s(k+1)$, as desired.
+  By~\cref{PostAnnihilation} and the induction hypothesis, $H_{w(k+1)}(s(k))=4*2^k-1\cdot 0 \oplus 1\oplus w(k)\cdot 0 \oplus 1 \oplus 4*2^k-1$. Since $5+8*2^k-1 = 2^{k+3}-3$ we can re-write this as $2^{k+2}-1\cdot 0 \oplus 1\oplus (2^{k+2}-1)*2-1\cdot 0\oplus 1\oplus 2^{k+2}-1\cdot 0$. That is, we have what is very nearly $G_{2^{k+3}-1}(0)\oplus G_{2^{k+3}-1}(0)$, with one fewer 0 in the center. They each evolve without interacting for $2^{k+2}-2$ steps by~\cref{lightspeed}. We have a precise description of the board at this point by~\cref{Pow2BelowPow2EvenSpacing}, it consists of evenly spaced $1$s with a gap size of $3$. $H_{w(k+1)}(s(k)+2^{k+2}-2)=(0100)\cdot 2^{k+1}-1\oplus 01010 \oplus (0010)\cdot 2^{k+1}-1$. By applying the game of life rule, we get a board with $111$s on the edges, and by applying it again we get annihilation. Note that $s(k)+2^{k+2} = 2^{k+2}-2+2^{k+2}=s(k+1)$, as desired.
 \end{proof}
 \begin{cor}
   $H_{w(k)}$ produces only clusters of size 1,2,3,6 for $k>0$. We do this by induction starting with $k=1$ as a base case, and proceeding as above. After the first $s(k)$ steps, where we have this by induction, it proceeds as $G_a$ for a $a\equiv 3 \Mod 4$, which produces cluster sizes of 1 and 3. We get clusters of size 2 and 6 on the last two steps.
 \end{cor}
 
-\begin{prop}
+\begin{prop}\label{pow2Plus1Description}
   A board of width $w=2^k+1$ has $tc(G_w)=3*2^{k-1}-3$, $fuse(G_w)=2^{k-1}+1$, and seen cluster sizes 1, 2, 3, and 6.
 \end{prop}
 \begin{proof}
-  As per~\cref{Power2} we have $G_w(2^{k-1}) = 1\oplus 2^k-1\cdot 0\oplus 1$. The next step is $G_w(2^{k-1}+1)=01\oplus 2^k-3\cdot 0\oplus 10$. Recentering at the antipode, we see a $1001$ padded by 0s. We have seen this form of board before, it occurs partway through the evolution of a board of size $2^k+3$, at step $G_{w+2}(2^{k-1})$, by~\cref{Pow2PlusPow2}. On these boards, evolution continues without interacting at the center all the way up to the point at which it cycles, just as it reached this point without interacting at the edges. At that point, the board is of the form $10001$, padded by 0s, this happens in $tc(G_{w+2})-2^{k-1}=2^{k-1}-2$ steps. Since we have that no interaction occured at the center, it is clear that in our case, we will get to the same result, but with 2 fewer 0s at the center, that is, $G_w(2^{k-1}+1+2^{k-1}-2) = G_w(2^k-1)=2^{k-1}-1\cdot 0 \oplus 101\oplus 2^{k-1}-1\cdot 0$. \\
+  As per~\cref{Power2} we have $G_w(2^{k-1}) = 1\oplus 2^k-1\cdot 0\oplus 1$. The next step is $G_w(2^{k-1}+1)=01\oplus 2^k-3\cdot 0\oplus 10$. Re-centering at the antipode, we see a $1001$ padded by 0s. We have seen this form of board before, it occurs partway through the evolution of a board of size $2^k+3$, at step $G_{w+2}(2^{k-1})$, by~\cref{Pow2PlusPow2}. On these boards, evolution continues without interacting at the center all the way up to the point at which it cycles, just as it reached this point without interacting at the edges. At that point, the board is of the form $10001$, padded by 0s, this happens in $tc(G_{w+2})-2^{k-1}=2^{k-1}-2$ steps. Since we have that no interaction occurred at the center, it is clear that in our case, we will get to the same result, but with 2 fewer 0s at the center, that is, $G_w(2^{k-1}+1+2^{k-1}-2) = G_w(2^k-1)=2^{k-1}-1\cdot 0 \oplus 101\oplus 2^{k-1}-1\cdot 0$. \\
   Before continuing, we note that we have seen clusters of size 1,2,3 in the steps up through $G_w(2^{k-1}+1)$, that in the very next step we see a cluster of size 6, and that in the rest of the discussed steps the board has followed the pattern of a board of size $2^k+3$, so those have produced only clusters of size 1,3,6. \\
   Now $G_w(2^k-1)=H_w(0)$. The next $2^{k-1}-2$ steps lead to the annihilation of $H_{w-4}$ by~\cref{101BoardsBig}, and this proposition gets the preconditions for~\cref{PostAnnihilation} which gets us that $G_w(2^k+2^{k-1}-3)=G_w(3*2^{k-1}-3)=01\oplus 2^k-3\cdot 0\oplus 10$, a state which we have seen before at step $2^{k-1}+1$. It is clear that no intermediate state has been repeated, so the time to cycle and fuse $3*2^{k-1}-3$ and $2^{k-1}+1$ as 
 \end{proof}
 
-The board of width 61 interests us, as it annihilates. In its evolution, we get a $1111$ cluster at the antipode, with the rest of the board dead. We examine boards of this form, recentering to the antipode, and find that after a few steps, they form what can be viewed of as a pair of boards with $11101$ and its reflection. So we examine boards with this at the center as a starting state:
+The board of width 61 interests us, as it annihilates. In its evolution, we get a $1111$ cluster at the antipode, with the rest of the board dead. We examine boards of this form, re-centering to the antipode, and find that after a few steps, they form what can be viewed of as a pair of boards with $11101$ and its reflection. So we examine boards with this at the center as a starting state:
 \begin{dfn}\label{11101Boards}
   For an odd $w=2k+1$, let $F_w$ be a board evolution, $F_w:\N\rightarrow B_w$, defined by $F_w(0) = k-2\cdot 0 \oplus 11101 \oplus k-2\cdot 0$. For even boards we add a zero on the right.
 \end{dfn}
@@ -367,12 +385,190 @@ Notice that for such $w$, on every fourth step, $F_w$ looks much like $G_w$, for
   Since we have this up to $k$, and there in no interaction at the edge for the $s$ under consideration, we also have it up to $s=2^{k-1}$ for $w=w(k+1)$, since the board is the same as with $w(k)$ simply padded with 0s. Then suppose $s>2^{k-1}$. We have that $F_{w(k+1)}(2^{k-1})=F_{w(k)}(0)\oplus G_{2^k}(0)$. Then let $r=s-2^{k-1}$, we have that the proposition holds for $F_{w(k)}(r)$ by the inductive hypothesis. Then, clearly, inserting $1110$ left of the leftmost living cell in  $G_{w(k+1)-4}(s)$ gets $F_{w(k)}(r)\oplus G_{2^k}(r)=F_{w(k+1)}(s)$ as desired.
 \end{proof}
 
-We proceed to boards with a cluster of 4 as the starting point.
+We have what we need from these boards, however the above proof is clearly lacking some notation. First, we define some notation needed for the described `insertion' operation.
+\begin{dfn}\label{getPartBoard}
+  We define two families of functions $left_n(B):\B_w\rightarrow \B_{n}$ and $right_n(B):\B_w\rightarrow B_n$ for $1\leq n\leq w$. Let $B=x_1x_2\dots x_w$, where each $x_i\in\{0,1\}$ denotes a single living or dead cell, all of which are appended together. Then $left_n(B)=x_1x_2\dots x_n$ and $right_n(B)=x_{w-n+1}x_{w-n+2}\dots x_w$
+\end{dfn}
+
+Next, we wish to describe this notion of two different board evolutions behaving similarly. This is in fact a notion that has come up before, as we will shortly see. However, our description of board evolutions needs just a little more development first. In particular, it's nice to point out some formalities regarding the relationship between the starting board $G(0)$ of a board evolution $G$, and $G$ itself.
+
+\begin{prop}\label{BoardDeterminesEvolution}
+  $\,$
+  \begin{enumerate}[label=(\alph*)]
+    \item Given a board $B\in\B_w$, the board evolution function determined by $B$ is the unique function $\bar{B}: \N\rightarrow \B_w$ such that for all $n\geq 0$, $\bar{B}(n)=C^n(B)$. (Recall that $C^n$ is the application of the game of life function $n$ times.)
+    \item For all $n,m\geq 0$ we have that $\bar B(n+m)=(\overline{\bar B(n)})(m)$
+  \end{enumerate}
+\end{prop}
+\begin{proof}
+  The first part is clear, it is practically a restatement of the definition, simply defining new notation. The next part is also clear, $\bar{B}(n)=C^n(B)$, so $\bar B(n+m) = C^m(C^n(B))$ which gets the desired statement.
+\end{proof}
+
+To describe board evolutions behaving similarly, we want to define functions over boards produced by a board evolution function.
+\begin{dfn}\label{boardEvolutionSet}
+  For a board evolution $G:\N\rightarrow \B_w$ the {\bf board evolution set} denoted $\angled{G}$ is defined by $\{G(n)\;|\; n\in \N\}$. The restricted board evolution set is defined by $\angled{G}[a,b) = \{G(n)\;|\; a\leq n < b\}$ for $a<b\in \N$. Sometimes we write $\angled{G}[a,\infty)$, this is the set $\{G(n)\;|\; a\leq n\}$ as expected; and we write $\angled{G}[a,b)$ with $a\in \N$, $b\in \N\cup\{\infty\}$, to include the possibility that we mean $\angled{G}[a,\infty)$.
+
+  Let $\G_w$ be the set of all board evolutions which map to $\B_w$, $\G_w=\{G:\N\rightarrow \B_w\;|\;\allowbreak G \text{ is a board evolution}\}=\{\bar B\;|\; B\in \B_w\}$, and let $\hat \G_w$ be the set of all (unrestricted) board evolution sets, $\hat \G_w = \{\angled{G} \;|\; G\in \G_w\}$. 
+\end{dfn}
+
+\begin{prop}\label{timeToCycleIsAllBoards}
+  We observe that for a board evolution $G\in \G_w$, $tc(G)=\abs{\angled{G}}$.
+\end{prop}
+
+\begin{dfn}\label{boardHomo}
+  For given board evolutions $G\in \G_w$, $H\in \G_v$, $a\in \N$, $b\in\N\cup\{\infty\}$, $a<b$, we say a function $f:\angled{G}[a,b)\rightarrow \angled{H}$ is a {\bf (board) homomorphism on $[a,b)$} if for all $m\in [a,b)$, $(\overline{f(G(a))})(m)=f(G(m))$. If $a=0,b=\infty$ $f$ is a board homomorphism (and we can of course omit writing $a,b$ at all). %Board homomorphisms are functions which describe a map from an element of $\hat \G_w$ to an element of $\hat \G_v$. 
+\end{dfn}
+
+\begin{remark} This definition means that $f$ is defined by the transformation of a single board. If we have a pair $(f(G(a)), B)$, then $f$ is a unique homomorphism defined by that pair; it is defined by $f(G(m))=C^{m-a}(B)$. However definitions of this sort are undesirable, they require knowing this value $m$, which can be hard to compute for an arbitrary board. It is also possible that an $f$ defined this way will not be correct, for example this is possible if $G$ cycles faster than $\bar{B}$.
+\end{remark}
+
+\begin{prop}\label{homoCompose}
+  Let $G\in \G_w$, $H\in \G_v$, and let $f:\angled{G}\rightarrow \angled{H}$ be a homomorphism. Let $g:\angled{H}\rightarrow F$ with $F\in\hat\G_z$ be a homomorphism. Then $g\circ f$ is a homomorphism.
+\end{prop}
+
+\begin{dfn}\label{boardEpi}
+  Let $G\in \G_w$ be a board evolution function, $a\in \N$, $b\in\N\cup\{\infty\}$, $a<b$. Let $g:\angled{G}[a,b)\rightarrow H$ with $H\in\G_v$ be a board homomorphism. Then $g$ is a {\bf (board) epimorphism} if it is a surjection.
+\end{dfn}
+
+\begin{dfn}\label{boardIso}
+  Let $G\in \G_w$, $H\in \G_v$ be board evolution functions, $a\in \N$, $b\in\N\cup\{\infty\}$, $a<b$, and $g:\angled{G}[a,b)\rightarrow \angled{H}$ be a homomorphism.
+  If there exists a homomorphism $h:\angled{H}[k,k+b-a)\rightarrow \angled{G}$ for some $k$, such that $h=\inv g$, then $g$ is a bijection whose inverse is also a homomorphism, it is a {\bf (board) isomorphism.}
+\end{dfn}
+
+Generally, we are more interested in homomorphisms which are not restricted, however sometimes we do not know the full behavior of a board evolution, in which case we may only be able to describe a restricted homomorphism.
+
+Now we show some examples of isomorphisms we have already seen.
+\addtocounter{prop}{1}
+\begin{innerProp}\label{isomRotation}
+  Any rotation is an isomorphism, the inverse is rotation in the opposite direction.
+\end{innerProp}
+\begin{innerProp}\label{isomReflection}
+  A reflection around the center is an isomorphism, it is its own inverse.
+\end{innerProp}
+\begin{innerProp}\label{isomDead}
+  Let $G=\overline{w\cdot 0}$ and $H=\overline{v\cdot 0}$ be board evolution functions. Then the unique function $\hat 0:\{w\cdot 0\}\rightarrow \{v\cdot 0\}$ (or equivalently $\hat 0:\angled{G}\rightarrow\angled{H}$) is a (trivial) isomorphism.
+\end{innerProp}
+\begin{innerProp}\label{isom4mod4}
+  Let $f:\angled{G_{4k+3}}\rightarrow \angled{G_{4k+4}}$ be the unique homomorphism defined by setting $f(G_{4k+3}(0))=G_{4k+4}(0)$. It is an isomorphism. More usefully, it is equal to $\bar f$ defined by $B\mapsto B\oplus 0$. % and $g(G_{4k+3}(0))=G_{4k+2}$.
+\end{innerProp}
+\begin{proof}
+  We have this by~\cref{3mod4With0is4mod4}.
+\end{proof}
+\begin{innerProp}\label{isom1001-10001}
+  Let $A=0\cdot k\oplus 1001\oplus 0\cdot k$ and let $B=0\cdot k\oplus 10001\oplus 0\cdot k$. Then define $f:\angled{\bar A}[0,k+1)\rightarrow \angled{\bar B}[0,k+1)$ as the unique homomorphism such that $f(\bar A(0))=\bar B(0)$. It is an isomorphism. More usefully, it is equal to $\bar f$ defined by $X\mapsto left_{k+2}(X)\oplus 0\oplus right_{k+2}(X)$.
+\end{innerProp}
+\begin{proof}
+  $f$ is an isomorphism by~\cref{SymmetricAntipodeAll}. $\bar f = f$ was demonstrated in that proof, we get it by re-centering at the antipode (notably this operation is an isomorphism, it is a rotation) and then applying~\cref{isom4mod4}
+\end{proof}
+
+%As remarked on above, we can define a homomorphism $f$ by taking two boards $A$ and $B$, and letting $f(C^n(A))=C^n(B)$, but this is typically undesirable, we often want nicer homomorphisms like the 4 discussed above.
+
+%\begin{dfn}
+%  For some board evolution $G\in \G_w$, a homomorphism $f:\angled{G}\rightarrow \B_v$ is called {\bf normal} if it is a restriction of some function $\hat f:\B_w\rightarrow \B_v$
+
+%Now, we have noticed an isomorphism corresponding to the relationship between boards of width 3 modulo 4 and those of width 4 modulo 4. However in~\cref{2mod4everyotherwith0} we notice that the relationship between boards of width 2 modulo for and the others holds most neatly when we look at every other step. Similarly,~\cref{11101LikeReg} acts on every 4th step. So
+%\begin{dfn}
+%  For a board evolution $G\in \G_w$, $a\in\N,b\in\N\cup\{\infty\}$, we say a function $f:\angled{G}[a,b)\rightarrow \B_v$ is a {\bf homomorphism of degree $n$} if for all $k\in\N$ such that $a+nk\in[a,b)$ we have $(\overline{f(G(a))})(a+nk)=f(G( $
+%\end{dfn}
+
+We have a way of determining an epimorphism from any homomorphism; a way to describe the image of a homomorphism:
+\begin{prop}\label{imageOfhomo}
+  Let $G\in \G_w$ and $H\in \G_v$ be board evolutions, and $f:\angled{G}\rightarrow \angled{H}$ be a homomorphism. Then $\image f = \angled{\overline{G(0)}}$.
+\end{prop}
+\begin{proof} 
+  Let $F=\overline{G(0)}$, and $B\in\angled{F}$ be a board, then there is an $n$ such that $B=F(n)$. Then by the definition of homomorphisms, $f(G(n))=H(n)$. So every element in $\angled{F}\in\image f$. Conversely, each element of $\angled{G}$ is mapped to an element of $\angled{F}$, so $\angled{F}=\image f$. 
+\end{proof}
+
+\begin{remark}
+  A small note about wording: given a board evolution $G$, we say that a board $B\in\angled G$ is in the {\bf cycle} of $G$ if $B\in\angled{\overline{fuse(G)}}$, and we say that $B$ is in the {\bf fuse} of $G$ otherwise.
+\end{remark}
+
+\begin{prop}\label{cyclesMapToCycles}
+  Let $G,H$ be board evolution functions, and $f:\angled{G}\rightarrow\angled{H}$ be a homomorphism between them. Let $B\in\angled{G}$. If $B$ is in the cycle of $G$, then $f(B)$ is in the cycle of $H$.
+\end{prop}
+\begin{proof}
+  Suppose $B$ is in the cycle of $G$, then $C^{cl(G)}(B)=B$, so we must have that $C^{cl(G)}(f(B))=f(B)$, which means $f(B)$ is in the cycle of $H$.
+\end{proof}
+\begin{cor}\label{epiFuseRelated}
+  If there is an epimorphism $g:\angled{G}\rightarrow\angled{H}$ then $fuse(H)\leq fuse(G)$.
+\end{cor}
+\begin{proof}
+  Since each board in the cycle of $G$ maps to a board in the cycle of $H$, the only boards which can map to the fuse of $H$ are the fuse of $G$. This is an epimorphism, so $G$ must have at least as many boards in its cycle as $H$.
+\end{proof}
+
+An important property of epimorphisms:
+
+\begin{prop}\label{epiImpliesCycleLengthDivisibility}
+  Let $G\in \G_w$, $H\in \G_v$ be board evolutions, and $f:\angled{G}\rightarrow \angled{H}$ be an epimorphism. Then, the cycle lengths of the board evolutions are related: $cl(H)\divides cl(G)$.
+\end{prop}
+\begin{proof}
+  We have that $G(cl(G)+tc(G))=G(tc(G))=G(fuse(G))$, so $f(G(cl(G)+tc(G)))=f(G(tc(G)))=f(G(fuse(G)))$. This immediately gets $cl(H)\divides cl(G)$. % which implies that $tc(H)\leq tc(G)$, $fuse(H)\leq fuse(G)$, and $cl(H)\divides cl(G)$.
+  %Let $k$ be the value such that $fuse(H)=fuse(G)-k$, then $0\leq k\leq fuse(G)$.
+  %So far, we can describe $f$ as follows: $f(G(n))=\begin{cases} H(n) & \text{if } n<fuse(G) \\ H(
+  %Suppose $cl(H)\ndivides fuse(G)-fuse(H)$. 
+\end{proof}
+
+Then we can see that isomorphism preserves important board evolution properties, as we would expect from an isomorphism:
+\begin{prop}\label{isomPreservesCycles}
+  Let $G, H$ be board evolutions, and $f$ be an isomorphism $f:\angled{G}\rightarrow\angled{H}$. Then $tc(G)=tc(H)$, $fuse(G)=fuse(H)$, $cl(G)=cl(H)$.
+\end{prop}
+\begin{proof}
+  This is trivial by~\cref{epiImpliesCycleLengthDivisibility} and~\cref{epiFuseRelated}, since we have that $f$ and $\inv f$ are epimorphisms, we see that $cl(G)$ and $cl(H)$ divide each other, and the fuses less than or equal to one another, so we have equality in all both cases. Time to cycle is simply the sum of the cycle length and the fuse, so these are also equal.
+\end{proof}
+
+We've described homomorphisms, but only given examples of isomorphisms. We give an example to demonstrate that homomorphisms which are not isomorphisms do in fact exist.
+\begin{example}
+  Let $B=G_{11}(0)=00000100000$ and $D=G_{19}(0)$. By simple examination, or by~\cref{Pow2PlusPow2}, $fuse(G_{11})=2$ and $cl(G_{11})=4$. The same proposition gives us $fuse(G_{19})=2$ and $cl(G_{19})=12$. Then we can organize a homomorphism $f:\angled{\bar D}\rightarrow \angled{\bar B}$, as usual, defined by $f(D)=B$. Or somewhat more descriptively, $f(\bar D(0))=\bar B(0)$, $f(\bar D(1))=\bar B(1)$, and for $n\geq 2$, let $r$ be the remainder of $(n-2)/3$, then $f(\bar D(n))=\bar B(r+2)$.
+\end{example}
+
+We have noted that if there exists an epimorphism $\angled{G}\rightarrow \angled{H}$, then $cl(H)\divides cl(G)$, we prove that the converse is not true, by counter example.
+\begin{prop}\label{divisibilityNotImplyEpi}
+  Let $B=G_9(0)$ and $D=G_{19}(0)$. We show that there is no epimorphism $f:\angled{B}\rightarrow\angled{H}$, even though $cl(\bar B)\divides cl(\bar D)$.
+\end{prop}
+\begin{proof}
+  Suppose there were an epimorphism. $tc(G_w)=\abs{\angled{G_w}}$, and we can compute by~\cref{Pow2PlusPow2} and~\cref{pow2Plus1Description} that $fuse(G_9)=5$, $cl(G_9)=4$, and $fuse(G_{19})=2$, $cl(G_{19})=12$. Suppose there were an epimorphism $f:\angled{\bar D}\rightarrow \angled{\bar B}$. By~\cref{cyclesMapToCycles}, we have that $f(\angled{\overline{G_{19}(2)}})\subseteq \angled{\overline{B_9(5)}}$. There remain 5 boards in $\angled{\bar B}$ that are not mapped to, but only 2 boards in $\angled{\bar G}$ which may be mapped to them, so there is no epimorphism.
+\end{proof}
+
+However, we can organize a homomorphism in this case.
+\begin{prop}\label{divisibilityImplyHomomorphism}
+  Let $G,H$ be board evolutions, and $cl(H)\divides cl(G)$. There exists a possible homomorphism $f:\angled{G}\rightarrow \angled{H}$.
+\end{prop}
+\begin{proof}
+  We construct such a homomorphism. Breaking off into cases, suppose $fuse(G)\leq fuse(H)$. Then let $f(G(0))=H(fuse(G)-fuse(H))$, this uniquely defines the homomorphism, and it is fairly clear that the definition is correct.
+  
+  Suppose $fuse(G)>fuse(H)$. Then simply set $f(G(0))=H(0)$. We show that the definition is correct, that is, no board $B\in\angled{G}$ is mapped to two different boards of $H$. This could occur since for $n\geq fuse(G)$, we have $G(n)=G(n+cl(G))$. Defining the homomorphism uniquely by setting $f(G(0))$ may cause $f(G(n))\neq f(G(n+cl(G))$, since the definition is based on the value passed to $G$, not the board itself.
+  We show that $f(G(n))=f(G(n+cl(G)))$, for all $n\geq fuse(G)$. $n\geq fuse(G)>fuse(H)$, so $f(G(n))$ is mapped to a board $D\in\angled{H}$ in the cycle of $\angled{H}$. Therefore, since $cl(H)\divides cl(G)$, we have that $f(G(n+cl(G)))=f(C^{cl(G)}(G(n)))=C^{cl(G)}(f(G(n)))=C^{cl{G}}(D)=D$, exactly as desired. 
+\end{proof}
+
+In fact, we could obtain the above propositions about homomorphisms in a different way. These are in fact homomorphisms on monoids. Let $G\in \G_w$, and $B,C\in \angled G$. Note that there exist $n,m$ such that $B=G(n)$ and $C=G(m)$. We see that $(G,+)$ is a monoid, where $B+C=G(n+m)$. Of course $G(0)$ is the identity, and if $fuse(G)$ this is simply the cyclic group $\Z_{cl(G)}$. 
+
+We can combine homomorphisms with function composition, but now we describe another way to combine them.
+\begin{prop}\label{appendHomomorphisms}
+  Let $G:\N\rightarrow B_w,H:\rightarrow B_v$ be board evolutions, and $f:\angled{G}\rightarrow B_{w'}, g:\angled{H}\rightarrow B_{v'}$ be homomorphisms.
+  Define $f\oplus g:\angled{\overline{G(0)\oplus H(0)}}$ by $f\oplus g(B)=f(left_w(B))\oplus g(right_v(B))$. If neither $G$ nor $H$ interact at the edges for the first $s$ steps, then $f\oplus g$ is a restricted homomorphism on $[0,s)$.
+\end{prop}
+
+For our board-evolutions which start with $11101$, those that we called $F_w$, we found an isomorphism, we only know the behavior of these boards up until they reach the antipode. But we know this for arbitrarily large widths. We formulate this as follows:
+\begin{dfn}\label{infiniteBoards}
+  Let $\B_\infty$ be the set of all boards of infinite width where each column consists of only living cells or only dead cells, that is, this models the game of life on a cylinder, or the elementary cellular automata denoted by rule 22 on a line.
+  % For $B\in \B_\infty$ we choose some arbitrary cell to be $x_0$ and write $B=\dots x_{-2}x_{-1}x_0x_1x_2\dots$. Let $center_w:\B_\infty\rightarrow \B_w$ be defined as follows. For $center_w(B)$, suppose there is a leftmost living cell $x_i$ and a rightmost living cell in $B$, $x_j$. For convenience, rotate $B$ such that $-i=j$ if $j-i$ is odd, and $j=-i+1$ if $j-i$ is even. Then let $center_w$ be the $w$ cells around $x_0$, with more on the right if $w$ is even.
+  Let $living_w: \B_\infty\rightarrow \B_w$ map a board $B$ to the narrowest board containing all of the living cells in $B$, padded with dead cells to be width $w$ in the usual way. That is, let $v$ be the width of $B$, then if $w-v$ is even, put $(w-v)/2$ dead cells on each side of $B$, otherwise put $(w-v-1)/2$ dead cells on the left and $(w-v+1)/2$ dead cells on the right. If $v>w$, $living_w(B)$ is undefined (so technically the domain of $living_w$ is a subset of $\B_\infty$). 
+\end{dfn}
+
+%For example, let $B=\dots00010001000\dots$, then $center_4(B)=0001$ and $center_5(B)=10001$. Let $C=\dots000100101000\dots$, then $center_5(C)=10010$ ($i=-2, j=3$), and $center_6(C)=100101$. Generally we will use an odd width on the center when $j-i$ is odd, and an even center when $j-i$ is even, and obtain exactly the cells 
+
+\begin{prop}\label{isom11101-1}
+  Let $f:\angled{G_\infty}\rightarrow\angled{F_\infty}$ be defined by $f(G_\infty(s))=F_\infty(s)$. The function $f$ is an isomorphism, and $f(G(4s))$ is exactly $G(4s)$ with $1110$ inserted immediately left of the leftmost $1$ in $G(4s)$.
+\end{prop}
+\begin{proof}
+  This follows by~\cref{11101LikeReg}, using~\cref{lightspeed} to see that we can model $F_\infty(s)$ by $F_{w}$ with $w>2s+5$, and likewise for $G_\infty$.
+\end{proof}
+
+We return to boards with a cluster of 4 as the starting point.
 \begin{dfn}\label{initCenterClusterBoards}
   We define a family of maps $G_w:\N\times \N\rightarrow \B_w$ as follows.
   \[ G_w(n,s)=\begin{cases}
-      C^s((w-n)/2\cdot 0\oplus n\cdot 1\oplus (w-n)/2\cdot 0) & \text{if } n\equiv w \Mod(2) \\
-      C^s((w-n-1)/2\cdot 0\oplus n\cdot 1\oplus (w-n-1)/2 + 1\cdot 0) & \text{if } n\not\equiv w \Mod(2) \end{cases} \]
+      C^s((w-n)/2\cdot 0\oplus n\cdot 1\oplus (w-n)/2\cdot 0) & \text{if } n\equiv w \Mod{2} \\
+      C^s((w-n-1)/2\cdot 0\oplus n\cdot 1\oplus (w-n-1)/2 + 1\cdot 0) & \text{if } n\not\equiv w \Mod{2} \end{cases} \]
   It is undefined if $n>w$. For a fixed $n\leq w$, $G_w(n, s)$ is a board evolution with a living cluster of width $n$ in the center. Notably, the $G_w(s)$ defined in~\cref{mainBoard1Center} is simply convenient notation for $G_w(1,s)$. 
 \end{dfn}
 
@@ -385,10 +581,29 @@ We proceed to boards with a cluster of 4 as the starting point.
   Clearly this implies that $$G_{2^k+4}(4, 2^{k-1}) = 11101\oplus 27\cdot 0\oplus (10001\oplus 27\cdot 0)\cdot 2^{k-6}-1\oplus 1001\oplus (27\cdot 0\oplus 10001)\cdot 2^{k-6}-1\oplus 27\cdot 0\oplus 10111$$
 \end{prop}
 \begin{proof}
-  First, the lack of interaction at the edges is clear by a simple extension of~\cref{OddBoardFirstEdge} (generalization at~\cref{???}.) We proceed by induction, and take $k=6$ as a base case, $G_{68}(4, 31)$ does follow the proper form. Suppose the proposition holds for $k$, we prove it for $k+1$. Clearly, $G_{2^{k+1}+4}(4,2^{k-1})=2^{k-1}\cdot 0\oplus G_{2^k+4}(4,2^{k-1})\oplus 2^{k-1}\cdot 0$. By~\cref{SymmetricAntipodeAll} we see that the $1001$ parts behaves similarly to the $10001$ parts, having one less zero in the center simply makes every successor state have one less zero. Then, by this fact and repeated applications of~\cref{Power2}, and~\cref{11101BoardsBig}; or simply applications of the game of life rule, we see that $G_{2^{k+1}+4}(4,2^{k-1}+13)$ will be the first time the isolated segments begin interacting, they will cause the center to annihilate, and in another two steps we will get another smaller `annihilation event' and end up with $G_{2^{k+1}+4}(4,2^{k-1}+16)=2^{k-1}-16\cdot 0\oplus 11101\oplus 27\cdot 0\oplus 1\oplus 2^k-30\cdot 0\oplus 1\oplus 27\cdot 0\oplus 10111\oplus 2^{k-1}-16$.
+  First, the lack of interaction at the edges is clear by~\cref{lightspeed}. We proceed by induction, and take $k=6$ as a base case, $G_{68}(4, 31)$ does follow the proper form. Suppose the proposition holds for $k$, we prove it for $k+1$. By induction, $G_{2^{k+1}+4}(4,2^{k-1})=2^{k-1}\cdot 0\oplus G_{2^k+4}(4,2^{k-1})\oplus 2^{k-1}\cdot 0$. Let $\phi$ be the isomorphism described in~\cref{isom1001-10001} from boards with $1001$ to $10001$ in the center, and $\psi$ be the isomorphism described in~\cref{isom11101-1} which shows how boards starting with a single 1 are related to those starting with a 11101. More specifically, let $A=0\cdot 13\oplus 1001\oplus 0\cdot 13$, and $\phi:\bar{A}[0,14)\rightarrow \B_{16}$ be the described isomorphism. Let $id_w$ be the identity homomorphism, where $id(B)=B$, for boards of width $w$, and let $r_w$ be the reflection homomorphism for boards of width $w$.
+  
+  Then, let $f$ be the unique homomorphism defined by the pair $G_{2^{k+1}+4}(4,2^{k-1})$ and $B=2^{k-1}\cdot 0\oplus 1\oplus 27\cdot 0\oplus (10001\oplus 27\cdot0)\cdot 2^{k-5}-1\oplus 1\oplus 2^{k-1}\cdot 0$, restricted to 13 steps. It is an isomorphism for these 13 steps, since $f$ can be written as follows. We use the identity for the zeros on the left, treat the $11101$ as a $G_{27}(0)$, use the identity for the $10001$s, treat the $1001$ as $G_{31}(2)$ and so on symmetrically, which gets $f=id_{2^{k-1}-13}\oplus (living_{27}\circ \psi)\oplus id_{14+32*(2^{k-6}-1)-13}\oplus \phi\oplus id_{14+32*(2^{k-6}-1)-13}\oplus (r_{27}\circ living_{27}\circ \psi)\oplus id_{2^{k-1}-13}$. So $f(G_{2^k+4}(4,2^{k-1}+13))=\overline{f(G_{2^k+4}(4,2^{k-1}))}(13)=\bar{B}(13)$. Furthermore, we have a nice description of each of these isomorphisms, so from $\bar{B}(13)$ we will be able to get back to $G_{2^k+4}(4,2^{k-1}+13)$ easily. Doing this gets a board where much of the center is about to annihilate, it is easy to see that it will do so, leaving 2 symmetric segments which contain living cells, of width 29.
 
-  Again, by~\cref{11101BoardsBig} and~\cref{Power2} or applications of the game of life rule, we get that $G_{2^{k+1}+4}(4,2^{k-1}+31)=2^{k-1}-31\cdot 0 \oplus 1000\oplus 7\cdot 1\oplus 0111\cdot 5\oplus 00000\oplus 1110\cdot 7\oplus 2^k-61\cdot 0\dots$, where the $\dots$ represent that the rest of the board is symmetric, it is already described. For $k=7$ this is exactly the desired state, we are done. We use $k=7$ as a base case also.
+  From here it is again easy to see that $G_{2^{k+1}+4}(4,2^{k-1}+16)=0\cdot 2^{k-1}-16\oplus 11101\oplus 27\cdot 0\oplus 1\oplus 0\cdot 2^k-30\oplus 1\oplus 27\cdot 0\oplus 10111\oplus 2^{k-1}-16$. The parts $11101\oplus 27\cdot 0\oplus 1$ are almost exactly $G_{2^k+4}(4,16)$, the difference is that we have one more zero in the center, and we must use $\psi$ on the right part. A close examination of the next 16 steps of $G_{2^k+4}(4,16)$ shows that this simply produces a board $G_{2^k+4}(4,32)$ which will also have a spare 0 in the center. That board has a $1001$ in the center, so the extra 0 produces an isomorphic board. Hence let $A=0\cdot 2^{k-1}-16\oplus 11101\oplus 27\cdot 0\oplus 1\oplus 0\cdot 2^{k-1}-16$. There is an isomorphism from this board to $G_{2^k+4}(4,16)$, the one with one fewer 0 in the center, call it $g$, we know this isomorphism works for $2^{k-1}-16$ steps since we know the evolution of $G_{2^k+4}(4,16)$ for that many steps. Then $G_{2^{k+1}+4}(4,2^{k-1}+16)=A\oplus 00\oplus r(A)$, where $r$ denotes reflection. Applying our isomorphism $g$, advancing $2^{k-1}-16$ steps, and applying the inverse isomorphism (adding a 0 back to the center of each) gets exactly the desired board for $G_{2^{k+1}+4}(4,2^k)$. 
+\end{proof}
+\begin{comment}
+\begin{proof}
+  First, the lack of interaction at the edges is clear by~\cref{lightspeed}. We proceed by induction, and take $k=6$ as a base case, $G_{68}(4, 31)$ does follow the proper form. Suppose the proposition holds for $k$, we prove it for $k+1$. Clearly, $G_{2^{k+1}+4}(4,2^{k-1})=2^{k-1}\cdot 0\oplus G_{2^k+4}(4,2^{k-1})\oplus 2^{k-1}\cdot 0$. By~\cref{isom1001-10001} we see that the $1001$ parts behaves similarly to the $10001$ parts, having one less zero in the center simply makes every successor state have one less zero. Then, by this fact and repeated applications of~\cref{Power2}, and~\cref{11101BoardsBig}; or simply applications of the game of life rule, we see that $G_{2^{k+1}+4}(4,2^{k-1}+13)$ will be the first time the isolated segments begin interacting, they will cause the center to annihilate, and in another two steps we will get another smaller `annihilation event' and end up with $G_{2^{k+1}+4}(4,2^{k-1}+16)=2^{k-1}-16\cdot 0\oplus 11101\oplus 27\cdot 0\oplus 1\oplus 2^k-30\cdot 0\oplus 1\oplus 27\cdot 0\oplus 10111\oplus 2^{k-1}-16$.
 
-  Notably, the successor of the state described above, $G_{2^{k+1}+4}(4,2^{k-1}+32)$ is similar to having two boards $B=G_{2^6+4}(4, 32)$, with zeros between and around them. The difference is that in $B$, there is a spare $0111$ on the right, or a $1110$ on the left, depending on which symmetric half of our board is looked at. However, as described in~\cref{11101LikeReg}, this doesn't change how it interacts with the rest of $B$ at all, as long as the first interaction is at a step which is divisible by 4. The other difference is that in the very center of $B$ there is one less 0 than in this board. However, as noted previously, $1001$ and $10001$ behave the same way. The sole difference is that that one extra $0$ will stay throughout. Therefore, we have $G_{2^{k+1}+4}(4,2^{k-1}+2^5)\approx 2^{k-1}-2^5\cdot 0\oplus G_{2^k+4}(4,2^5)\oplus 2^k-(2^6-2)\cdot 0\oplus G_{2^6+4}(4,2^5)\oplus 2^{k-1}-2^5\cdot 0$. Then by the induction hypothesis, in a further $2^{k-1}-2^5$ steps the state will be $G_{2^{k+1}+4}(4,2^k)\approx G_{2^k+4}(4,2^{k-1})\oplus 00\oplus G_{2^k+4}(4,2^{k-1})$, with the approximation meaning that this state is exactly what is desired. 
+  Again, by~\cref{11101BoardsBig} and~\cref{Power2} or applications of the game of life rule, we get that $G_{2^{k+1}+4}(4,2^{k-1}+31)=2^{k-1}-31\cdot 0 \oplus 1000\oplus 7\cdot 1\oplus 0111\cdot 5\oplus 00000\oplus 1110\cdot 7\oplus 2^k-61\cdot 0\dots$, where the $\dots$ represent that the rest of the board is symmetric, it is already described (We have symmetry by~\cref{???}). For $k=7$ this is exactly the desired state, we are done. We use $k=7$ as a base case also.
+
+  Notably, the successor of the state described above, $G_{2^{k+1}+4}(4,2^{k-1}+32)$ is similar to having two boards $B=G_{2^6+4}(4, 32)$, with zeros between and around them. The difference is that in $B$, there is a spare $0111$ on the right, or a $1110$ on the left, depending on which symmetric half of our board is looked at. The other difference is that in the very center of $B$ there is one less 0 than in this board. However, as noted previously, $1001$ and $10001$ behave the same way. %Let $f:\angled{G_\infty}\rightarrow \angled{F_\infty}$ be the isomorphism in~\cref{isom11101-1} and $g$ be the isomorphism between boards seeded with $1001$ and $10001$ described in~\cref{isom1001-10001}. Then, we have $G_{2^{k+1}+4}(4,2^{k-1}+2^5) = 2^{k-1}-2^5\cdot 0\oplus center_{2^k+4}(f(G_$
+  Therefore, we have $G_{2^{k+1}+4}(4,2^{k-1}+2^5) = 2^{k-1}-2^5\cdot 0\oplus G_{2^k+4}(4,2^5)\oplus 2^k-(2^6-2)\cdot 0\oplus G_{2^6+4}(4,2^5)\oplus 2^{k-1}-2^5\cdot 0$. Then by the induction hypothesis, in a further $2^{k-1}-2^5$ steps the state will be $G_{2^{k+1}+4}(4,2^k)\approx G_{2^k+4}(4,2^{k-1})\oplus 00\oplus G_{2^k+4}(4,2^{k-1})$, with the approximation meaning that this state is exactly what is desired. 
+\end{proof}
+\end{comment}
+
+We finally return to the board of width 61 which inspired this discussion. Or rather, we can generalize to any board of width $2^k-3$ as follows:
+\begin{prop}\label{pow2-3annihilates}
+  $G_{2^k-3}$ annihilates in $2^k+14$ steps, for $k\geq 6$. 
+\end{prop}
+\begin{proof}
+  The first $2^{k-1}-2$ steps are described precisely by~\cref{Power2} and~\cref{Pow2BelowPow2EvenSpacing}, we have $G_{2^k-3}(2^{k-1}-2)=(1000)\cdot 2^{k-2}-1\oplus 1$. Apply the game of life rule twice to get $G_{2^k-3}(2^{k-1})=11\oplus 0\cdot 2^{k}-7\oplus 11$. Recenter at the antipode (an isomorphism) to get a board $B=2^{k-1}-4\cdot 0\oplus 1111\oplus 2^{k-1}-3$. 
 \end{proof}
 \end{document}
+%  LocalWords:  Conway's evolutions
